@@ -137,3 +137,71 @@ export type WordStat = {
 
 /** キーは idKey(id) */
 export type WordStatMap = Record<string, WordStat>;
+
+// ─────────────────────────────────────────────
+// AI連携（STEP 4）
+// ワイヤ形式（AIとの往復）は snake_case を保つ。
+// アプリ内部（WordEntry / CardContent）は camelCase なので、境界で変換する。
+// ─────────────────────────────────────────────
+
+/** docs/spec.md §10-2 の転記。推測で変えない */
+export type FeedbackRequest = {
+  session: {
+    tempo: TempoId;
+    tempoLabel: string; // "ふつう"
+    instantThresholdMs: number; // 8000 | 5000 | 3000
+    questionCount: number;
+    score: number;
+    maxScore: number;
+    accuracyRate: number;
+    instantRate: number;
+    causeCounts: Record<Cause, number>; // ★AIに数えさせない
+  };
+  results: Array<{
+    id: WordId;
+    word: string;
+    pos: string; // posRaw を渡す
+    level: Level;
+    meaning: string;
+    similar: string[];
+    example_scene: string;
+    selected_meaning: string | null; // 無回答は null
+    is_correct: boolean;
+    is_instant: boolean; // ★閾値判定はアプリ側で済ませる
+    response_ms: number | null;
+    cause: Cause | null;
+  }>;
+  /** 最大5件。★createdAt 昇順で呼び出し側がソート済みの前提（docs/spec.md §10-2） */
+  pending: Array<{
+    id: WordId;
+    word: string;
+    pos: string;
+    level: Level;
+    meaning: string;
+    similar: string[];
+    example_scene: string;
+    cause: Cause;
+  }>;
+};
+
+/**
+ * ★docs/spec.md に `FeedbackResponse` という型名の定義は存在しない。
+ *   §10-3 の JSON Schema から起こした型。
+ *   `cause_label` は 2026-08-16 の決定でスキーマから除外済み
+ *   （cause から一意に決まるのでアプリ側が決める。§10-9）。
+ */
+export type AiReviewCard = {
+  id: WordId;
+  word: string;
+  explanation: string;
+  usage_note: string;
+  example_en: string;
+  example_ja: string;
+};
+
+export type FeedbackResponse = {
+  pattern_summary: string;
+  review_cards: AiReviewCard[];
+  next_message: string;
+  suggested_tempo: TempoId | "none";
+};

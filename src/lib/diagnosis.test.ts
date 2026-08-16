@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { diagnose } from "@/lib/diagnosis";
+import { CAUSE_LABEL, causeLabel, diagnose } from "@/lib/diagnosis";
 import type { Choice, Question, WordEntry } from "@/lib/types";
 
 /**
@@ -138,5 +138,18 @@ describe("diagnose", () => {
     });
     expect(r.isInstant).toBe(true);
     expect(r.cause).toBeNull();
+  });
+});
+
+describe("causeLabel", () => {
+  it("3つの Cause それぞれが固定文言を返す", () => {
+    // なぜ：docs/spec.md §10-9。cause_label はレスポンススキーマから外してあり、
+    //       アプリ側が cause から決定する。AIに生成させると呼び出しごとに
+    //       文言が揺れて、同じ原因が別物に見える
+    expect(causeLabel("pos_mismatch")).toBe("品詞の取り違え");
+    expect(causeLabel("weak_memory")).toBe("意味の記憶があいまい");
+    expect(causeLabel("hesitant")).toBe("思い出すのに時間がかかった");
+    // 定数と関数がずれていないこと
+    expect(causeLabel("pos_mismatch")).toBe(CAUSE_LABEL.pos_mismatch);
   });
 });

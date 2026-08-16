@@ -42,3 +42,18 @@ export function diagnose(input: {
     cause: selected.causeIfChosen ?? "weak_memory",
   };
 }
+
+/**
+ * cause の日本語表記（docs/spec.md §10-9 の固定文言）。
+ * ★AIに生成させない。呼び出しごとに文言が揺れて同じ原因が別物に見えるため、
+ *   レスポンススキーマからも外してある。
+ */
+export const CAUSE_LABEL: Readonly<Record<Cause, string>> = {
+  pos_mismatch: "品詞の取り違え",
+  weak_memory: "意味の記憶があいまい",
+  hesitant: "思い出すのに時間がかかった",
+};
+
+export function causeLabel(cause: Cause): string {
+  return CAUSE_LABEL[cause];
+}

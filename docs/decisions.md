@@ -312,3 +312,7 @@ export const CUSTOM_ID_BASE = 1001;
 - cause_label はアプリ側で決定し、レスポンススキーマから外す → spec.md §10-9
 - example_en / example_ja の分割理由を明記 → spec.md §10-9
 - review_cards の出力上限を5枚、優先順位を確定 → spec.md §10-10
+- 検証層に V6 を追加。V2（検証）の後に slice(0,5) する順序を確定 → spec.md §10-5
+- AI が cards に存在しない id を返した場合は無視する（卒業を復活させない）→ spec.md §10-5
+- V5 の文字列長上限を6項目で確定（末尾クリップのみ）→ spec.md §10-5
+- suggested_tempo の "normal" は数値条件が無いため条件2のみで通す → spec.md §10-4
