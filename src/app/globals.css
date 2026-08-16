@@ -1,26 +1,109 @@
 @import "tailwindcss";
 
+/**
+ * ENGLISH700 デザイントークン。
+ * docs/spec.md §13-5（色・余白・角丸）と §13-6（フォント）の転記であり、
+ * ここで新しい値を決めない。値を変えたくなったら先に spec.md を直す。
+ *
+ * ★暗色固定。prefers-color-scheme の分岐を置かない（docs/spec.md §13）。
+ *   通勤中・就寝前でも眩しくないことを優先する。
+ * ★影を定義しない。面の分離は 1px solid var(--line) だけで行う（§13-5 b）。
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ── 色（§13-5 a）。括弧内は --bg に対するコントラスト比 ── */
+  --bg: #0f1216; /* 純黒にしない。純黒だと面の段差が作れない */
+  --surface: #161a20;
+  --line: #252b33; /* 1px ヘアライン。影の代わりに使う唯一の分離手段 */
+  --text: #e6e9ed;
+  --text-sub: #9aa3ad; /* 7.0:1 */
+  --text-mute: #7c8590; /* 5.0:1 ★これより暗い文字色を作らない */
+  --ok: #4ade80; /* 10.7:1 正解・達成・卒業 */
+  --ok-fill: rgba(74, 222, 128, 0.14);
+  --attn: #fb923c; /* 8.2:1 復習対象・注意 */
+  --attn-fill: rgba(251, 146, 60, 0.14);
+  /* ★赤は定義しない（§13-3）。間違いを責める色にしない。
+     差し色は --ok と --attn の2つだけ。3色目を足すのは §13-3 の変更にあたる */
+
+  /* ── 余白（§13-5 b）4px 基準。中間値を作らない ── */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 64px;
+
+  /* ── レイアウト（§13-5 c・§13-7 a） ── */
+  --page-x: 20px; /* 画面の左右余白。固定 */
+  --content-max: 480px; /* PC で開いても片手幅を保つ */
+
+  /* ── 角丸（§13-5 b）★ピル（999px）を使わない ── */
+  --r1: 2px; /* 目盛り・原因ラベル */
+  --r2: 6px; /* 面（選択肢・カード・ボタン）。角丸の上限 */
+
+  /* ── フォント（§13-6 a）Web フォントを読み込まない ── */
+  --font-ja: system-ui, -apple-system, "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", sans-serif;
+  --font-en: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
+/**
+ * Tailwind のユーティリティから同じトークンを引けるようにする（§3 判断6）。
+ * bg-bg / text-text-sub / border-line / rounded-r2 のように使う。
+ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-text-sub: var(--text-sub);
+  --color-text-mute: var(--text-mute);
+  --color-ok: var(--ok);
+  --color-ok-fill: var(--ok-fill);
+  --color-attn: var(--attn);
+  --color-attn-fill: var(--attn-fill);
+
+  --radius-r1: var(--r1);
+  --radius-r2: var(--r2);
+
+  --font-sans: var(--font-ja);
+  --font-mono: var(--font-en);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  /* スクロールバー・フォームコントロールも暗色にする */
+  color-scheme: dark;
+  background: var(--bg);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ja);
+  /* §13-6 b 本文。★16px 未満のテキストを作らない */
+  font-size: 17px;
+  line-height: 1.75;
+  /* 横向きにしたときに iOS が本文を勝手に拡大するのを防ぐ */
+  -webkit-text-size-adjust: 100%;
+}
+
+/**
+ * 全画面共通の器（§13-7 a）。最大 480px で中央寄せ、左右余白は固定。
+ */
+.app-shell {
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--page-x);
+}
+
+/**
+ * 英単語・数値・単位に当てる（§13-6 a）。日本語には当てない。
+ * 数値の桁を揃えるのが目的なので tabular-nums をセットで持たせる。
+ */
+.en {
+  font-family: var(--font-en);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
