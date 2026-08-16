@@ -1,0 +1,2702 @@
+[
+  {
+    "id": 1,
+    "word": "provide",
+    "pos": "動詞",
+    "meaning": "提供する・与える",
+    "level": 1,
+    "example_scene": "メール・報告",
+    "similar": "supply, offer, give"
+  },
+  {
+    "id": 2,
+    "word": "require",
+    "pos": "動詞",
+    "meaning": "必要とする・要求する",
+    "level": 1,
+    "example_scene": "要件・依頼",
+    "similar": "need, demand, request"
+  },
+  {
+    "id": 3,
+    "word": "schedule",
+    "pos": "名詞/動詞",
+    "meaning": "予定・スケジュールを組む",
+    "level": 1,
+    "example_scene": "会議・計画",
+    "similar": "plan, timetable, agenda"
+  },
+  {
+    "id": 4,
+    "word": "available",
+    "pos": "形容詞",
+    "meaning": "利用可能な・都合がつく",
+    "level": 1,
+    "example_scene": "在庫・予約",
+    "similar": "accessible, obtainable"
+  },
+  {
+    "id": 5,
+    "word": "increase",
+    "pos": "動詞/名詞",
+    "meaning": "増加する・増やす",
+    "level": 1,
+    "example_scene": "売上・数値報告",
+    "similar": "grow, rise, expand"
+  },
+  {
+    "id": 6,
+    "word": "decrease",
+    "pos": "動詞/名詞",
+    "meaning": "減少する・減らす",
+    "level": 1,
+    "example_scene": "コスト・数値",
+    "similar": "reduce, decline, drop"
+  },
+  {
+    "id": 7,
+    "word": "receive",
+    "pos": "動詞",
+    "meaning": "受け取る・受信する",
+    "level": 1,
+    "example_scene": "メール・荷物",
+    "similar": "get, obtain, accept"
+  },
+  {
+    "id": 8,
+    "word": "confirm",
+    "pos": "動詞",
+    "meaning": "確認する・確かめる",
+    "level": 1,
+    "example_scene": "予約・注文",
+    "similar": "verify, check, validate"
+  },
+  {
+    "id": 9,
+    "word": "contact",
+    "pos": "動詞/名詞",
+    "meaning": "連絡する・連絡先",
+    "level": 1,
+    "example_scene": "顧客対応",
+    "similar": "reach, communicate"
+  },
+  {
+    "id": 10,
+    "word": "meeting",
+    "pos": "名詞",
+    "meaning": "会議・ミーティング",
+    "level": 1,
+    "example_scene": "社内・社外",
+    "similar": "conference, session"
+  },
+  {
+    "id": 11,
+    "word": "deadline",
+    "pos": "名詞",
+    "meaning": "締め切り・期限",
+    "level": 1,
+    "example_scene": "プロジェクト管理",
+    "similar": "due date, cutoff"
+  },
+  {
+    "id": 12,
+    "word": "complete",
+    "pos": "動詞/形容詞",
+    "meaning": "完了する・完全な",
+    "level": 1,
+    "example_scene": "タスク管理",
+    "similar": "finish, accomplish, done"
+  },
+  {
+    "id": 13,
+    "word": "order",
+    "pos": "名詞/動詞",
+    "meaning": "注文・命令・順番",
+    "level": 1,
+    "example_scene": "購買・在庫",
+    "similar": "request, purchase"
+  },
+  {
+    "id": 14,
+    "word": "invoice",
+    "pos": "名詞",
+    "meaning": "請求書",
+    "level": 1,
+    "example_scene": "経理・支払",
+    "similar": "bill, statement"
+  },
+  {
+    "id": 15,
+    "word": "budget",
+    "pos": "名詞/動詞",
+    "meaning": "予算・予算を立てる",
+    "level": 1,
+    "example_scene": "経営・財務",
+    "similar": "funds, allocation"
+  },
+  {
+    "id": 16,
+    "word": "deliver",
+    "pos": "動詞",
+    "meaning": "届ける・配達する",
+    "level": 1,
+    "example_scene": "物流・成果物",
+    "similar": "ship, send, distribute"
+  },
+  {
+    "id": 17,
+    "word": "report",
+    "pos": "名詞/動詞",
+    "meaning": "報告書・報告する",
+    "level": 1,
+    "example_scene": "業務報告",
+    "similar": "document, summary"
+  },
+  {
+    "id": 18,
+    "word": "submit",
+    "pos": "動詞",
+    "meaning": "提出する・送信する",
+    "level": 1,
+    "example_scene": "書類・申請",
+    "similar": "send, hand in, file"
+  },
+  {
+    "id": 19,
+    "word": "approve",
+    "pos": "動詞",
+    "meaning": "承認する・賛成する",
+    "level": 1,
+    "example_scene": "稟議・申請",
+    "similar": "authorize, permit, accept"
+  },
+  {
+    "id": 20,
+    "word": "cancel",
+    "pos": "動詞",
+    "meaning": "キャンセルする・取り消す",
+    "level": 1,
+    "example_scene": "予約・契約",
+    "similar": "withdraw, revoke, abort"
+  },
+  {
+    "id": 21,
+    "word": "customer",
+    "pos": "名詞",
+    "meaning": "顧客・お客様",
+    "level": 1,
+    "example_scene": "営業・サービス",
+    "similar": "client, consumer, buyer"
+  },
+  {
+    "id": 22,
+    "word": "product",
+    "pos": "名詞",
+    "meaning": "製品・商品",
+    "level": 1,
+    "example_scene": "営業・製造",
+    "similar": "item, goods, merchandise"
+  },
+  {
+    "id": 23,
+    "word": "service",
+    "pos": "名詞",
+    "meaning": "サービス・業務",
+    "level": 1,
+    "example_scene": "顧客対応",
+    "similar": "support, assistance"
+  },
+  {
+    "id": 24,
+    "word": "price",
+    "pos": "名詞",
+    "meaning": "価格・値段",
+    "level": 1,
+    "example_scene": "販売・交渉",
+    "similar": "cost, rate, charge, fee"
+  },
+  {
+    "id": 25,
+    "word": "payment",
+    "pos": "名詞",
+    "meaning": "支払い・支払額",
+    "level": 1,
+    "example_scene": "経理・契約",
+    "similar": "fee, charge, settlement"
+  },
+  {
+    "id": 26,
+    "word": "announce",
+    "pos": "動詞",
+    "meaning": "発表する・告知する",
+    "level": 1,
+    "example_scene": "社内通知",
+    "similar": "declare, notify, inform"
+  },
+  {
+    "id": 27,
+    "word": "attend",
+    "pos": "動詞",
+    "meaning": "出席する・参加する",
+    "level": 1,
+    "example_scene": "会議・イベント",
+    "similar": "join, participate, be present"
+  },
+  {
+    "id": 28,
+    "word": "present",
+    "pos": "動詞/形容詞",
+    "meaning": "発表する・出席している",
+    "level": 1,
+    "example_scene": "会議・プレゼン",
+    "similar": "show, demonstrate, attend"
+  },
+  {
+    "id": 29,
+    "word": "hire",
+    "pos": "動詞",
+    "meaning": "雇う・採用する",
+    "level": 1,
+    "example_scene": "人事・採用",
+    "similar": "employ, recruit, engage"
+  },
+  {
+    "id": 30,
+    "word": "retire",
+    "pos": "動詞",
+    "meaning": "退職する・引退する",
+    "level": 1,
+    "example_scene": "人事・キャリア",
+    "similar": "resign, quit, step down"
+  },
+  {
+    "id": 31,
+    "word": "promote",
+    "pos": "動詞",
+    "meaning": "昇進させる・宣伝する",
+    "level": 1,
+    "example_scene": "人事・マーケティング",
+    "similar": "advance, advertise, market"
+  },
+  {
+    "id": 32,
+    "word": "negotiate",
+    "pos": "動詞",
+    "meaning": "交渉する・折衝する",
+    "level": 1,
+    "example_scene": "契約・商談",
+    "similar": "discuss, bargain, deal"
+  },
+  {
+    "id": 33,
+    "word": "discuss",
+    "pos": "動詞",
+    "meaning": "議論する・話し合う",
+    "level": 1,
+    "example_scene": "会議・相談",
+    "similar": "talk about, debate, consider"
+  },
+  {
+    "id": 34,
+    "word": "travel",
+    "pos": "動詞/名詞",
+    "meaning": "出張する・旅行",
+    "level": 1,
+    "example_scene": "出張・移動",
+    "similar": "trip, journey, commute"
+  },
+  {
+    "id": 35,
+    "word": "staff",
+    "pos": "名詞",
+    "meaning": "スタッフ・従業員",
+    "level": 1,
+    "example_scene": "組織・人事",
+    "similar": "employees, personnel, workforce"
+  },
+  {
+    "id": 36,
+    "word": "manager",
+    "pos": "名詞",
+    "meaning": "マネージャー・管理者",
+    "level": 1,
+    "example_scene": "組織・役職",
+    "similar": "supervisor, director, head"
+  },
+  {
+    "id": 37,
+    "word": "position",
+    "pos": "名詞",
+    "meaning": "職位・立場・位置",
+    "level": 1,
+    "example_scene": "求人・組織",
+    "similar": "role, post, job"
+  },
+  {
+    "id": 38,
+    "word": "apply",
+    "pos": "動詞",
+    "meaning": "応募する・申請する・適用する",
+    "level": 1,
+    "example_scene": "求人・申請",
+    "similar": "register, request, submit"
+  },
+  {
+    "id": 39,
+    "word": "interview",
+    "pos": "名詞/動詞",
+    "meaning": "面接・インタビュー",
+    "level": 1,
+    "example_scene": "採用活動",
+    "similar": "meeting, evaluation"
+  },
+  {
+    "id": 40,
+    "word": "register",
+    "pos": "動詞/名詞",
+    "meaning": "登録する・記録",
+    "level": 1,
+    "example_scene": "参加・申込",
+    "similar": "sign up, enroll, record"
+  },
+  {
+    "id": 41,
+    "word": "accommodate",
+    "pos": "動詞",
+    "meaning": "収容する・便宜を図る",
+    "level": 2,
+    "example_scene": "宿泊・顧客対応",
+    "similar": "house, adjust, adapt"
+  },
+  {
+    "id": 42,
+    "word": "acquire",
+    "pos": "動詞",
+    "meaning": "取得する・習得する",
+    "level": 2,
+    "example_scene": "M&A・スキル",
+    "similar": "obtain, gain, purchase"
+  },
+  {
+    "id": 43,
+    "word": "adequate",
+    "pos": "形容詞",
+    "meaning": "十分な・適切な",
+    "level": 2,
+    "example_scene": "品質管理・評価",
+    "similar": "sufficient, enough, suitable"
+  },
+  {
+    "id": 44,
+    "word": "allocate",
+    "pos": "動詞",
+    "meaning": "割り当てる・配分する",
+    "level": 2,
+    "example_scene": "リソース管理",
+    "similar": "assign, distribute, designate"
+  },
+  {
+    "id": 45,
+    "word": "alternative",
+    "pos": "名詞/形容詞",
+    "meaning": "代替案・別の",
+    "level": 2,
+    "example_scene": "提案・問題解決",
+    "similar": "option, substitute, other"
+  },
+  {
+    "id": 46,
+    "word": "analyze",
+    "pos": "動詞",
+    "meaning": "分析する・解析する",
+    "level": 2,
+    "example_scene": "データ・レポート",
+    "similar": "examine, evaluate, assess"
+  },
+  {
+    "id": 47,
+    "word": "anticipate",
+    "pos": "動詞",
+    "meaning": "予想する・期待する",
+    "level": 2,
+    "example_scene": "計画・予測",
+    "similar": "expect, predict, foresee"
+  },
+  {
+    "id": 48,
+    "word": "approximately",
+    "pos": "副詞",
+    "meaning": "おおよそ・約",
+    "level": 2,
+    "example_scene": "数値報告",
+    "similar": "about, roughly, around"
+  },
+  {
+    "id": 49,
+    "word": "assess",
+    "pos": "動詞",
+    "meaning": "評価する・査定する",
+    "level": 2,
+    "example_scene": "業績評価",
+    "similar": "evaluate, judge, appraise"
+  },
+  {
+    "id": 50,
+    "word": "assign",
+    "pos": "動詞",
+    "meaning": "割り当てる・任命する",
+    "level": 2,
+    "example_scene": "プロジェクト管理",
+    "similar": "allocate, appoint, delegate"
+  },
+  {
+    "id": 51,
+    "word": "assume",
+    "pos": "動詞",
+    "meaning": "想定する・引き受ける",
+    "level": 2,
+    "example_scene": "議論・業務",
+    "similar": "suppose, presume, take on"
+  },
+  {
+    "id": 52,
+    "word": "authorize",
+    "pos": "動詞",
+    "meaning": "権限を与える・承認する",
+    "level": 2,
+    "example_scene": "稟議・セキュリティ",
+    "similar": "approve, permit, empower"
+  },
+  {
+    "id": 53,
+    "word": "capacity",
+    "pos": "名詞",
+    "meaning": "容量・能力・生産能力",
+    "level": 2,
+    "example_scene": "製造・物流",
+    "similar": "ability, volume, output"
+  },
+  {
+    "id": 54,
+    "word": "collaborate",
+    "pos": "動詞",
+    "meaning": "協力する・共同作業する",
+    "level": 2,
+    "example_scene": "チームワーク",
+    "similar": "cooperate, work together, partner"
+  },
+  {
+    "id": 55,
+    "word": "commitment",
+    "pos": "名詞",
+    "meaning": "約束・専念",
+    "level": 2,
+    "example_scene": "契約・目標",
+    "similar": "pledge, dedication, obligation"
+  },
+  {
+    "id": 56,
+    "word": "compensate",
+    "pos": "動詞",
+    "meaning": "補償する・給与を支払う",
+    "level": 2,
+    "example_scene": "人事・保険",
+    "similar": "pay, reimburse, offset"
+  },
+  {
+    "id": 57,
+    "word": "competitive",
+    "pos": "形容詞",
+    "meaning": "競争力のある",
+    "level": 2,
+    "example_scene": "市場分析",
+    "similar": "rival, aggressive, comparable"
+  },
+  {
+    "id": 58,
+    "word": "comply",
+    "pos": "動詞",
+    "meaning": "従う・準拠する",
+    "level": 2,
+    "example_scene": "規制・コンプライアンス",
+    "similar": "follow, adhere, conform"
+  },
+  {
+    "id": 59,
+    "word": "conduct",
+    "pos": "動詞/名詞",
+    "meaning": "実施する・行動・指揮",
+    "level": 2,
+    "example_scene": "調査・会議",
+    "similar": "carry out, perform, execute"
+  },
+  {
+    "id": 60,
+    "word": "consecutive",
+    "pos": "形容詞",
+    "meaning": "連続した",
+    "level": 2,
+    "example_scene": "数値・記録",
+    "similar": "successive, continuous, sequential"
+  },
+  {
+    "id": 61,
+    "word": "contract",
+    "pos": "名詞/動詞",
+    "meaning": "契約・契約する",
+    "level": 2,
+    "example_scene": "法務・商談",
+    "similar": "agreement, deal, arrangement"
+  },
+  {
+    "id": 62,
+    "word": "contribute",
+    "pos": "動詞",
+    "meaning": "貢献する・寄付する",
+    "level": 2,
+    "example_scene": "チーム・社会",
+    "similar": "provide, donate, add to"
+  },
+  {
+    "id": 63,
+    "word": "coordinate",
+    "pos": "動詞",
+    "meaning": "調整する・まとめる",
+    "level": 2,
+    "example_scene": "プロジェクト管理",
+    "similar": "organize, manage, arrange"
+  },
+  {
+    "id": 64,
+    "word": "determine",
+    "pos": "動詞",
+    "meaning": "決定する・特定する",
+    "level": 2,
+    "example_scene": "意思決定",
+    "similar": "decide, establish, identify"
+  },
+  {
+    "id": 65,
+    "word": "distribute",
+    "pos": "動詞",
+    "meaning": "配布する・流通させる",
+    "level": 2,
+    "example_scene": "物流・資料",
+    "similar": "deliver, supply, circulate"
+  },
+  {
+    "id": 66,
+    "word": "efficient",
+    "pos": "形容詞",
+    "meaning": "効率的な",
+    "level": 2,
+    "example_scene": "業務改善",
+    "similar": "effective, productive, streamlined"
+  },
+  {
+    "id": 67,
+    "word": "eliminate",
+    "pos": "動詞",
+    "meaning": "排除する・取り除く",
+    "level": 2,
+    "example_scene": "コスト削減",
+    "similar": "remove, get rid of, eradicate"
+  },
+  {
+    "id": 68,
+    "word": "emphasize",
+    "pos": "動詞",
+    "meaning": "強調する",
+    "level": 2,
+    "example_scene": "プレゼン・交渉",
+    "similar": "stress, highlight, underline"
+  },
+  {
+    "id": 69,
+    "word": "establish",
+    "pos": "動詞",
+    "meaning": "設立する・確立する",
+    "level": 2,
+    "example_scene": "会社設立・ルール",
+    "similar": "found, set up, create"
+  },
+  {
+    "id": 70,
+    "word": "evaluate",
+    "pos": "動詞",
+    "meaning": "評価する・査定する",
+    "level": 2,
+    "example_scene": "業績・プロジェクト",
+    "similar": "assess, judge, appraise"
+  },
+  {
+    "id": 71,
+    "word": "expand",
+    "pos": "動詞",
+    "meaning": "拡大する・広げる",
+    "level": 2,
+    "example_scene": "事業拡大",
+    "similar": "grow, increase, extend"
+  },
+  {
+    "id": 72,
+    "word": "expire",
+    "pos": "動詞",
+    "meaning": "期限が切れる・失効する",
+    "level": 2,
+    "example_scene": "契約・パスポート",
+    "similar": "run out, lapse, end"
+  },
+  {
+    "id": 73,
+    "word": "facilitate",
+    "pos": "動詞",
+    "meaning": "促進する・容易にする",
+    "level": 2,
+    "example_scene": "プロセス改善",
+    "similar": "help, assist, enable"
+  },
+  {
+    "id": 74,
+    "word": "generate",
+    "pos": "動詞",
+    "meaning": "生み出す・発生させる",
+    "level": 2,
+    "example_scene": "売上・アイデア",
+    "similar": "produce, create, yield"
+  },
+  {
+    "id": 75,
+    "word": "implement",
+    "pos": "動詞",
+    "meaning": "実施する・実装する",
+    "level": 2,
+    "example_scene": "システム・政策",
+    "similar": "execute, apply, carry out"
+  },
+  {
+    "id": 76,
+    "word": "indicate",
+    "pos": "動詞",
+    "meaning": "示す・指摘する",
+    "level": 2,
+    "example_scene": "データ・報告",
+    "similar": "show, suggest, point out"
+  },
+  {
+    "id": 77,
+    "word": "initiative",
+    "pos": "名詞",
+    "meaning": "主導権・取り組み",
+    "level": 2,
+    "example_scene": "リーダーシップ",
+    "similar": "action, drive, effort"
+  },
+  {
+    "id": 78,
+    "word": "inquire",
+    "pos": "動詞",
+    "meaning": "問い合わせる・尋ねる",
+    "level": 2,
+    "example_scene": "顧客対応",
+    "similar": "ask, question, request info"
+  },
+  {
+    "id": 79,
+    "word": "inspection",
+    "pos": "名詞",
+    "meaning": "検査・点検",
+    "level": 2,
+    "example_scene": "品質管理",
+    "similar": "check, review, examination"
+  },
+  {
+    "id": 80,
+    "word": "inventory",
+    "pos": "名詞",
+    "meaning": "在庫・棚卸し",
+    "level": 2,
+    "example_scene": "物流・製造",
+    "similar": "stock, supplies, goods"
+  },
+  {
+    "id": 81,
+    "word": "maintain",
+    "pos": "動詞",
+    "meaning": "維持する・保持する",
+    "level": 2,
+    "example_scene": "設備・関係",
+    "similar": "keep, preserve, sustain"
+  },
+  {
+    "id": 82,
+    "word": "maximize",
+    "pos": "動詞",
+    "meaning": "最大化する",
+    "level": 2,
+    "example_scene": "利益・効率",
+    "similar": "increase, optimize, enhance"
+  },
+  {
+    "id": 83,
+    "word": "minimize",
+    "pos": "動詞",
+    "meaning": "最小化する・減らす",
+    "level": 2,
+    "example_scene": "コスト・リスク",
+    "similar": "reduce, decrease, limit"
+  },
+  {
+    "id": 84,
+    "word": "monitor",
+    "pos": "動詞/名詞",
+    "meaning": "監視する・モニター",
+    "level": 2,
+    "example_scene": "品質・進捗",
+    "similar": "watch, track, observe"
+  },
+  {
+    "id": 85,
+    "word": "obtain",
+    "pos": "動詞",
+    "meaning": "入手する・得る",
+    "level": 2,
+    "example_scene": "情報・許可",
+    "similar": "get, acquire, secure"
+  },
+  {
+    "id": 86,
+    "word": "operate",
+    "pos": "動詞",
+    "meaning": "操作する・運営する",
+    "level": 2,
+    "example_scene": "機械・会社",
+    "similar": "run, manage, function"
+  },
+  {
+    "id": 87,
+    "word": "organize",
+    "pos": "動詞",
+    "meaning": "整理する・組織する",
+    "level": 2,
+    "example_scene": "イベント・業務",
+    "similar": "arrange, plan, coordinate"
+  },
+  {
+    "id": 88,
+    "word": "postpone",
+    "pos": "動詞",
+    "meaning": "延期する",
+    "level": 2,
+    "example_scene": "会議・イベント",
+    "similar": "delay, defer, reschedule"
+  },
+  {
+    "id": 89,
+    "word": "prepare",
+    "pos": "動詞",
+    "meaning": "準備する",
+    "level": 2,
+    "example_scene": "会議・プレゼン",
+    "similar": "plan, arrange, set up"
+  },
+  {
+    "id": 90,
+    "word": "priority",
+    "pos": "名詞",
+    "meaning": "優先事項・優先度",
+    "level": 2,
+    "example_scene": "タスク管理",
+    "similar": "importance, urgency, focus"
+  },
+  {
+    "id": 91,
+    "word": "procedure",
+    "pos": "名詞",
+    "meaning": "手順・手続き",
+    "level": 2,
+    "example_scene": "業務・マニュアル",
+    "similar": "process, method, steps"
+  },
+  {
+    "id": 92,
+    "word": "productivity",
+    "pos": "名詞",
+    "meaning": "生産性",
+    "level": 2,
+    "example_scene": "業務効率",
+    "similar": "efficiency, output, performance"
+  },
+  {
+    "id": 93,
+    "word": "proposal",
+    "pos": "名詞",
+    "meaning": "提案・企画書",
+    "level": 2,
+    "example_scene": "営業・企画",
+    "similar": "suggestion, plan, offer"
+  },
+  {
+    "id": 94,
+    "word": "reimbursement",
+    "pos": "名詞",
+    "meaning": "払い戻し・経費精算",
+    "level": 2,
+    "example_scene": "経費・出張",
+    "similar": "refund, repayment, compensation"
+  },
+  {
+    "id": 95,
+    "word": "renew",
+    "pos": "動詞",
+    "meaning": "更新する・再開する",
+    "level": 2,
+    "example_scene": "契約・資格",
+    "similar": "extend, refresh, restore"
+  },
+  {
+    "id": 96,
+    "word": "replace",
+    "pos": "動詞",
+    "meaning": "交換する・取って代わる",
+    "level": 2,
+    "example_scene": "設備・人事",
+    "similar": "substitute, swap, exchange"
+  },
+  {
+    "id": 97,
+    "word": "represent",
+    "pos": "動詞",
+    "meaning": "代表する・表す",
+    "level": 2,
+    "example_scene": "営業・外交",
+    "similar": "stand for, act for, depict"
+  },
+  {
+    "id": 98,
+    "word": "resolve",
+    "pos": "動詞",
+    "meaning": "解決する",
+    "level": 2,
+    "example_scene": "問題・紛争",
+    "similar": "solve, settle, fix"
+  },
+  {
+    "id": 99,
+    "word": "revenue",
+    "pos": "名詞",
+    "meaning": "収益・売上",
+    "level": 2,
+    "example_scene": "財務・決算",
+    "similar": "income, sales, earnings"
+  },
+  {
+    "id": 100,
+    "word": "strategy",
+    "pos": "名詞",
+    "meaning": "戦略・方針",
+    "level": 2,
+    "example_scene": "経営・マーケティング",
+    "similar": "plan, approach, policy"
+  },
+  {
+    "id": 101,
+    "word": "sufficient",
+    "pos": "形容詞",
+    "meaning": "十分な",
+    "level": 2,
+    "example_scene": "評価・報告",
+    "similar": "enough, adequate, ample"
+  },
+  {
+    "id": 102,
+    "word": "suitable",
+    "pos": "形容詞",
+    "meaning": "適切な・ふさわしい",
+    "level": 2,
+    "example_scene": "採用・選定",
+    "similar": "appropriate, fitting, proper"
+  },
+  {
+    "id": 103,
+    "word": "supervise",
+    "pos": "動詞",
+    "meaning": "監督する・管理する",
+    "level": 2,
+    "example_scene": "人事・現場",
+    "similar": "oversee, manage, direct"
+  },
+  {
+    "id": 104,
+    "word": "supply",
+    "pos": "名詞/動詞",
+    "meaning": "供給・提供する",
+    "level": 2,
+    "example_scene": "製造・物流",
+    "similar": "provide, deliver, stock"
+  },
+  {
+    "id": 105,
+    "word": "transfer",
+    "pos": "動詞/名詞",
+    "meaning": "転送する・転勤・振込",
+    "level": 2,
+    "example_scene": "人事・財務",
+    "similar": "move, shift, send"
+  },
+  {
+    "id": 106,
+    "word": "update",
+    "pos": "動詞/名詞",
+    "meaning": "更新する・最新情報",
+    "level": 2,
+    "example_scene": "システム・報告",
+    "similar": "revise, refresh, inform"
+  },
+  {
+    "id": 107,
+    "word": "urgent",
+    "pos": "形容詞",
+    "meaning": "緊急の・至急の",
+    "level": 2,
+    "example_scene": "メール・対応",
+    "similar": "pressing, immediate, critical"
+  },
+  {
+    "id": 108,
+    "word": "verify",
+    "pos": "動詞",
+    "meaning": "確認する・検証する",
+    "level": 2,
+    "example_scene": "データ・申請",
+    "similar": "check, confirm, validate"
+  },
+  {
+    "id": 109,
+    "word": "workforce",
+    "pos": "名詞",
+    "meaning": "労働力・従業員",
+    "level": 2,
+    "example_scene": "人事・組織",
+    "similar": "staff, employees, labor"
+  },
+  {
+    "id": 110,
+    "word": "correspond",
+    "pos": "動詞",
+    "meaning": "対応する・一致する・通信する",
+    "level": 2,
+    "example_scene": "メール・比較",
+    "similar": "match, communicate, relate"
+  },
+  {
+    "id": 111,
+    "word": "demonstrate",
+    "pos": "動詞",
+    "meaning": "実演する・証明する",
+    "level": 2,
+    "example_scene": "プレゼン・研修",
+    "similar": "show, prove, illustrate"
+  },
+  {
+    "id": 112,
+    "word": "discontinue",
+    "pos": "動詞",
+    "meaning": "中止する・廃止する",
+    "level": 2,
+    "example_scene": "製品・サービス",
+    "similar": "stop, terminate, end"
+  },
+  {
+    "id": 113,
+    "word": "draft",
+    "pos": "名詞/動詞",
+    "meaning": "草稿・下書きする",
+    "level": 2,
+    "example_scene": "文書作成",
+    "similar": "outline, sketch, prepare"
+  },
+  {
+    "id": 114,
+    "word": "duration",
+    "pos": "名詞",
+    "meaning": "期間・持続時間",
+    "level": 2,
+    "example_scene": "契約・プロジェクト",
+    "similar": "length, period, term"
+  },
+  {
+    "id": 115,
+    "word": "headquarters",
+    "pos": "名詞",
+    "meaning": "本社・本部",
+    "level": 2,
+    "example_scene": "組織・連絡",
+    "similar": "main office, head office, HQ"
+  },
+  {
+    "id": 116,
+    "word": "launch",
+    "pos": "動詞/名詞",
+    "meaning": "開始する・発売する",
+    "level": 2,
+    "example_scene": "新製品・プロジェクト",
+    "similar": "start, release, introduce"
+  },
+  {
+    "id": 117,
+    "word": "liability",
+    "pos": "名詞",
+    "meaning": "責任・負債",
+    "level": 2,
+    "example_scene": "法務・財務",
+    "similar": "responsibility, debt, obligation"
+  },
+  {
+    "id": 118,
+    "word": "merchandise",
+    "pos": "名詞",
+    "meaning": "商品・販売品",
+    "level": 2,
+    "example_scene": "小売・物流",
+    "similar": "goods, products, items"
+  },
+  {
+    "id": 119,
+    "word": "objective",
+    "pos": "名詞/形容詞",
+    "meaning": "目標・客観的な",
+    "level": 2,
+    "example_scene": "目標設定",
+    "similar": "goal, aim, unbiased"
+  },
+  {
+    "id": 120,
+    "word": "outstanding",
+    "pos": "形容詞",
+    "meaning": "優れた・未払いの",
+    "level": 2,
+    "example_scene": "評価・財務",
+    "similar": "excellent, unpaid, remarkable"
+  },
+  {
+    "id": 121,
+    "word": "overhead",
+    "pos": "名詞",
+    "meaning": "経費・間接費",
+    "level": 2,
+    "example_scene": "財務・原価",
+    "similar": "operating costs, expenses"
+  },
+  {
+    "id": 122,
+    "word": "payroll",
+    "pos": "名詞",
+    "meaning": "給与支払い名簿",
+    "level": 2,
+    "example_scene": "人事・経理",
+    "similar": "salary, wages, compensation"
+  },
+  {
+    "id": 123,
+    "word": "preliminary",
+    "pos": "形容詞",
+    "meaning": "予備的な・事前の",
+    "level": 2,
+    "example_scene": "調査・検討",
+    "similar": "initial, preparatory, prior"
+  },
+  {
+    "id": 124,
+    "word": "projection",
+    "pos": "名詞",
+    "meaning": "予測・見通し",
+    "level": 2,
+    "example_scene": "財務・計画",
+    "similar": "forecast, estimate, outlook"
+  },
+  {
+    "id": 125,
+    "word": "qualified",
+    "pos": "形容詞",
+    "meaning": "資格のある・適任の",
+    "level": 2,
+    "example_scene": "採用・選定",
+    "similar": "eligible, suitable, certified"
+  },
+  {
+    "id": 126,
+    "word": "quarter",
+    "pos": "名詞",
+    "meaning": "四半期",
+    "level": 2,
+    "example_scene": "財務・決算",
+    "similar": "three months, Q1-Q4"
+  },
+  {
+    "id": 127,
+    "word": "recruitment",
+    "pos": "名詞",
+    "meaning": "採用・募集",
+    "level": 2,
+    "example_scene": "人事",
+    "similar": "hiring, staffing, selection"
+  },
+  {
+    "id": 128,
+    "word": "regulation",
+    "pos": "名詞",
+    "meaning": "規制・規則",
+    "level": 2,
+    "example_scene": "コンプライアンス",
+    "similar": "rule, law, policy"
+  },
+  {
+    "id": 129,
+    "word": "renovation",
+    "pos": "名詞",
+    "meaning": "改修・リノベーション",
+    "level": 2,
+    "example_scene": "施設・不動産",
+    "similar": "remodeling, repair, upgrade"
+  },
+  {
+    "id": 130,
+    "word": "reservation",
+    "pos": "名詞",
+    "meaning": "予約",
+    "level": 2,
+    "example_scene": "ホテル・レストラン",
+    "similar": "booking, appointment"
+  },
+  {
+    "id": 131,
+    "word": "responsibility",
+    "pos": "名詞",
+    "meaning": "責任・義務",
+    "level": 2,
+    "example_scene": "役割・倫理",
+    "similar": "duty, obligation, accountability"
+  },
+  {
+    "id": 132,
+    "word": "retailer",
+    "pos": "名詞",
+    "meaning": "小売業者",
+    "level": 2,
+    "example_scene": "流通・販売",
+    "similar": "seller, merchant, dealer"
+  },
+  {
+    "id": 133,
+    "word": "shortage",
+    "pos": "名詞",
+    "meaning": "不足・欠乏",
+    "level": 2,
+    "example_scene": "在庫・人材",
+    "similar": "lack, deficit, scarcity"
+  },
+  {
+    "id": 134,
+    "word": "specification",
+    "pos": "名詞",
+    "meaning": "仕様・明細",
+    "level": 2,
+    "example_scene": "製品・契約",
+    "similar": "details, requirements, description"
+  },
+  {
+    "id": 135,
+    "word": "subscription",
+    "pos": "名詞",
+    "meaning": "定期購読・サブスクリプション",
+    "level": 2,
+    "example_scene": "サービス・メディア",
+    "similar": "membership, plan"
+  },
+  {
+    "id": 136,
+    "word": "temporary",
+    "pos": "形容詞",
+    "meaning": "一時的な・臨時の",
+    "level": 2,
+    "example_scene": "雇用・措置",
+    "similar": "provisional, interim, short-term"
+  },
+  {
+    "id": 137,
+    "word": "vendor",
+    "pos": "名詞",
+    "meaning": "ベンダー・仕入れ先",
+    "level": 2,
+    "example_scene": "調達・取引",
+    "similar": "supplier, seller, provider"
+  },
+  {
+    "id": 138,
+    "word": "warranty",
+    "pos": "名詞",
+    "meaning": "保証・保証書",
+    "level": 2,
+    "example_scene": "製品・契約",
+    "similar": "guarantee, coverage"
+  },
+  {
+    "id": 139,
+    "word": "agenda",
+    "pos": "名詞",
+    "meaning": "議題・スケジュール",
+    "level": 2,
+    "example_scene": "会議",
+    "similar": "schedule, plan, program"
+  },
+  {
+    "id": 140,
+    "word": "amendment",
+    "pos": "名詞",
+    "meaning": "修正・変更",
+    "level": 2,
+    "example_scene": "契約・規則",
+    "similar": "revision, change, modification"
+  },
+  {
+    "id": 141,
+    "word": "benchmark",
+    "pos": "名詞",
+    "meaning": "基準・ベンチマーク",
+    "level": 2,
+    "example_scene": "評価・比較",
+    "similar": "standard, reference, measure"
+  },
+  {
+    "id": 142,
+    "word": "delegate",
+    "pos": "動詞/名詞",
+    "meaning": "委任する・代表者",
+    "level": 2,
+    "example_scene": "マネジメント",
+    "similar": "assign, entrust, representative"
+  },
+  {
+    "id": 143,
+    "word": "dispatch",
+    "pos": "動詞/名詞",
+    "meaning": "派遣する・発送する",
+    "level": 2,
+    "example_scene": "物流・人事",
+    "similar": "send, ship, deploy"
+  },
+  {
+    "id": 144,
+    "word": "installation",
+    "pos": "名詞",
+    "meaning": "設置・インストール",
+    "level": 2,
+    "example_scene": "設備・IT",
+    "similar": "setup, fitting, mounting"
+  },
+  {
+    "id": 145,
+    "word": "negotiate",
+    "pos": "動詞",
+    "meaning": "交渉する",
+    "level": 2,
+    "example_scene": "契約・商談",
+    "similar": "discuss, bargain, deal"
+  },
+  {
+    "id": 146,
+    "word": "outsource",
+    "pos": "動詞",
+    "meaning": "外注する",
+    "level": 2,
+    "example_scene": "業務委託",
+    "similar": "contract out, delegate"
+  },
+  {
+    "id": 147,
+    "word": "reimburse",
+    "pos": "動詞",
+    "meaning": "払い戻す・弁済する",
+    "level": 2,
+    "example_scene": "経費・保険",
+    "similar": "refund, repay, compensate"
+  },
+  {
+    "id": 148,
+    "word": "streamline",
+    "pos": "動詞",
+    "meaning": "合理化する・効率化する",
+    "level": 2,
+    "example_scene": "業務改善",
+    "similar": "simplify, optimize, improve"
+  },
+  {
+    "id": 149,
+    "word": "subsidiary",
+    "pos": "名詞",
+    "meaning": "子会社",
+    "level": 2,
+    "example_scene": "企業・法務",
+    "similar": "affiliate, branch, division"
+  },
+  {
+    "id": 150,
+    "word": "turnover",
+    "pos": "名詞",
+    "meaning": "売上高・離職率",
+    "level": 2,
+    "example_scene": "財務・人事",
+    "similar": "revenue, attrition, rotation"
+  },
+  {
+    "id": 151,
+    "word": "adjacent",
+    "pos": "形容詞",
+    "meaning": "隣接した・近くの",
+    "level": 3,
+    "example_scene": "不動産・地図",
+    "similar": "nearby, neighboring, next to"
+  },
+  {
+    "id": 152,
+    "word": "administer",
+    "pos": "動詞",
+    "meaning": "管理する・運営する",
+    "level": 3,
+    "example_scene": "組織・政策",
+    "similar": "manage, oversee, govern"
+  },
+  {
+    "id": 153,
+    "word": "adverse",
+    "pos": "形容詞",
+    "meaning": "不利な・逆境の",
+    "level": 3,
+    "example_scene": "リスク・天候",
+    "similar": "negative, unfavorable, harmful"
+  },
+  {
+    "id": 154,
+    "word": "aggregate",
+    "pos": "動詞/名詞",
+    "meaning": "集計する・総計",
+    "level": 3,
+    "example_scene": "データ分析",
+    "similar": "total, combine, sum up"
+  },
+  {
+    "id": 155,
+    "word": "arbitration",
+    "pos": "名詞",
+    "meaning": "仲裁・調停",
+    "level": 3,
+    "example_scene": "紛争解決・法務",
+    "similar": "mediation, settlement"
+  },
+  {
+    "id": 156,
+    "word": "audit",
+    "pos": "名詞/動詞",
+    "meaning": "監査・会計検査",
+    "level": 3,
+    "example_scene": "財務・コンプライアンス",
+    "similar": "review, inspection, examination"
+  },
+  {
+    "id": 157,
+    "word": "autonomous",
+    "pos": "形容詞",
+    "meaning": "自律的な・独立した",
+    "level": 3,
+    "example_scene": "組織・AI",
+    "similar": "independent, self-governing"
+  },
+  {
+    "id": 158,
+    "word": "calibrate",
+    "pos": "動詞",
+    "meaning": "較正する・調整する",
+    "level": 3,
+    "example_scene": "機器・計画",
+    "similar": "adjust, fine-tune, measure"
+  },
+  {
+    "id": 159,
+    "word": "circumvent",
+    "pos": "動詞",
+    "meaning": "回避する・迂回する",
+    "level": 3,
+    "example_scene": "規制・問題",
+    "similar": "avoid, bypass, evade"
+  },
+  {
+    "id": 160,
+    "word": "clause",
+    "pos": "名詞",
+    "meaning": "条項・節",
+    "level": 3,
+    "example_scene": "契約・法律",
+    "similar": "provision, section, term"
+  },
+  {
+    "id": 161,
+    "word": "coherent",
+    "pos": "形容詞",
+    "meaning": "一貫した・筋の通った",
+    "level": 3,
+    "example_scene": "提案・報告",
+    "similar": "consistent, logical, clear"
+  },
+  {
+    "id": 162,
+    "word": "comprehensive",
+    "pos": "形容詞",
+    "meaning": "包括的な・総合的な",
+    "level": 3,
+    "example_scene": "計画・レポート",
+    "similar": "complete, thorough, extensive"
+  },
+  {
+    "id": 163,
+    "word": "concise",
+    "pos": "形容詞",
+    "meaning": "簡潔な・要領を得た",
+    "level": 3,
+    "example_scene": "文書・プレゼン",
+    "similar": "brief, succinct, to the point"
+  },
+  {
+    "id": 164,
+    "word": "confidential",
+    "pos": "形容詞",
+    "meaning": "機密の・秘密の",
+    "level": 3,
+    "example_scene": "情報管理",
+    "similar": "secret, private, classified"
+  },
+  {
+    "id": 165,
+    "word": "consensus",
+    "pos": "名詞",
+    "meaning": "合意・総意",
+    "level": 3,
+    "example_scene": "会議・意思決定",
+    "similar": "agreement, accord, unity"
+  },
+  {
+    "id": 166,
+    "word": "consolidate",
+    "pos": "動詞",
+    "meaning": "統合する・強化する",
+    "level": 3,
+    "example_scene": "M&A・財務",
+    "similar": "merge, combine, strengthen"
+  },
+  {
+    "id": 167,
+    "word": "contingency",
+    "pos": "名詞",
+    "meaning": "不測の事態・緊急対応",
+    "level": 3,
+    "example_scene": "リスク管理",
+    "similar": "emergency, backup plan"
+  },
+  {
+    "id": 168,
+    "word": "counterpart",
+    "pos": "名詞",
+    "meaning": "対応する人・相手方",
+    "level": 3,
+    "example_scene": "交渉・国際取引",
+    "similar": "equivalent, partner, opposite"
+  },
+  {
+    "id": 169,
+    "word": "cumulative",
+    "pos": "形容詞",
+    "meaning": "累積的な・積み重なる",
+    "level": 3,
+    "example_scene": "財務・データ",
+    "similar": "total, accumulated, growing"
+  },
+  {
+    "id": 170,
+    "word": "deficiency",
+    "pos": "名詞",
+    "meaning": "欠如・不足",
+    "level": 3,
+    "example_scene": "監査・評価",
+    "similar": "shortage, lack, weakness"
+  },
+  {
+    "id": 171,
+    "word": "depreciate",
+    "pos": "動詞",
+    "meaning": "減価償却する・価値が下がる",
+    "level": 3,
+    "example_scene": "財務・会計",
+    "similar": "decline, lose value"
+  },
+  {
+    "id": 172,
+    "word": "differentiate",
+    "pos": "動詞",
+    "meaning": "差別化する・区別する",
+    "level": 3,
+    "example_scene": "マーケティング",
+    "similar": "distinguish, separate"
+  },
+  {
+    "id": 173,
+    "word": "diligent",
+    "pos": "形容詞",
+    "meaning": "勤勉な・熱心な",
+    "level": 3,
+    "example_scene": "評価・採用",
+    "similar": "hardworking, dedicated, thorough"
+  },
+  {
+    "id": 174,
+    "word": "discrepancy",
+    "pos": "名詞",
+    "meaning": "相違・食い違い",
+    "level": 3,
+    "example_scene": "会計・データ",
+    "similar": "inconsistency, difference, gap"
+  },
+  {
+    "id": 175,
+    "word": "diversify",
+    "pos": "動詞",
+    "meaning": "多様化する",
+    "level": 3,
+    "example_scene": "投資・事業",
+    "similar": "expand, vary, broaden"
+  },
+  {
+    "id": 176,
+    "word": "eligible",
+    "pos": "形容詞",
+    "meaning": "資格がある・対象となる",
+    "level": 3,
+    "example_scene": "応募・給付",
+    "similar": "qualified, entitled, suitable"
+  },
+  {
+    "id": 177,
+    "word": "endorsement",
+    "pos": "名詞",
+    "meaning": "承認・推薦・裏書き",
+    "level": 3,
+    "example_scene": "広告・法律",
+    "similar": "approval, support, backing"
+  },
+  {
+    "id": 178,
+    "word": "entitle",
+    "pos": "動詞",
+    "meaning": "資格を与える",
+    "level": 3,
+    "example_scene": "権利・出版",
+    "similar": "qualify, allow, give right"
+  },
+  {
+    "id": 179,
+    "word": "equivalent",
+    "pos": "形容詞/名詞",
+    "meaning": "同等の・相当するもの",
+    "level": 3,
+    "example_scene": "比較・換算",
+    "similar": "equal, same as, comparable"
+  },
+  {
+    "id": 180,
+    "word": "fluctuation",
+    "pos": "名詞",
+    "meaning": "変動・揺れ",
+    "level": 3,
+    "example_scene": "市場・為替",
+    "similar": "variation, change, instability"
+  },
+  {
+    "id": 181,
+    "word": "franchise",
+    "pos": "名詞",
+    "meaning": "フランチャイズ・営業権",
+    "level": 3,
+    "example_scene": "飲食・小売",
+    "similar": "license, chain, dealership"
+  },
+  {
+    "id": 182,
+    "word": "fraud",
+    "pos": "名詞",
+    "meaning": "詐欺・不正",
+    "level": 3,
+    "example_scene": "コンプライアンス・法律",
+    "similar": "deception, scam, dishonesty"
+  },
+  {
+    "id": 183,
+    "word": "hierarchy",
+    "pos": "名詞",
+    "meaning": "階層・序列",
+    "level": 3,
+    "example_scene": "組織・構造",
+    "similar": "ranking, structure, order"
+  },
+  {
+    "id": 184,
+    "word": "implication",
+    "pos": "名詞",
+    "meaning": "影響・示唆・含意",
+    "level": 3,
+    "example_scene": "分析・議論",
+    "similar": "consequence, meaning, suggestion"
+  },
+  {
+    "id": 185,
+    "word": "incentive",
+    "pos": "名詞",
+    "meaning": "インセンティブ・動機付け",
+    "level": 3,
+    "example_scene": "営業・人事",
+    "similar": "motivation, reward, bonus"
+  },
+  {
+    "id": 186,
+    "word": "infrastructure",
+    "pos": "名詞",
+    "meaning": "インフラ・基盤",
+    "level": 3,
+    "example_scene": "IT・社会",
+    "similar": "framework, foundation, system"
+  },
+  {
+    "id": 187,
+    "word": "innovative",
+    "pos": "形容詞",
+    "meaning": "革新的な・斬新な",
+    "level": 3,
+    "example_scene": "製品・経営",
+    "similar": "creative, groundbreaking, new"
+  },
+  {
+    "id": 188,
+    "word": "integrity",
+    "pos": "名詞",
+    "meaning": "誠実さ・一体性",
+    "level": 3,
+    "example_scene": "倫理・データ",
+    "similar": "honesty, wholeness, ethics"
+  },
+  {
+    "id": 189,
+    "word": "interim",
+    "pos": "形容詞",
+    "meaning": "暫定的な・中間の",
+    "level": 3,
+    "example_scene": "人事・財務",
+    "similar": "temporary, provisional, acting"
+  },
+  {
+    "id": 190,
+    "word": "mandate",
+    "pos": "名詞/動詞",
+    "meaning": "命令・授権・義務付ける",
+    "level": 3,
+    "example_scene": "規制・権限",
+    "similar": "order, require, authorize"
+  },
+  {
+    "id": 191,
+    "word": "merger",
+    "pos": "名詞",
+    "meaning": "合併",
+    "level": 3,
+    "example_scene": "M&A・企業",
+    "similar": "acquisition, consolidation, union"
+  },
+  {
+    "id": 192,
+    "word": "mutual",
+    "pos": "形容詞",
+    "meaning": "相互の・共通の",
+    "level": 3,
+    "example_scene": "契約・関係",
+    "similar": "shared, reciprocal, common"
+  },
+  {
+    "id": 193,
+    "word": "obligation",
+    "pos": "名詞",
+    "meaning": "義務・責務",
+    "level": 3,
+    "example_scene": "契約・倫理",
+    "similar": "duty, responsibility, commitment"
+  },
+  {
+    "id": 194,
+    "word": "oversight",
+    "pos": "名詞",
+    "meaning": "監督・見落とし",
+    "level": 3,
+    "example_scene": "管理・ミス",
+    "similar": "supervision, error, omission"
+  },
+  {
+    "id": 195,
+    "word": "petition",
+    "pos": "名詞/動詞",
+    "meaning": "請願・申請する",
+    "level": 3,
+    "example_scene": "法律・行政",
+    "similar": "request, appeal, application"
+  },
+  {
+    "id": 196,
+    "word": "proficient",
+    "pos": "形容詞",
+    "meaning": "熟練した・堪能な",
+    "level": 3,
+    "example_scene": "スキル・採用",
+    "similar": "skilled, competent, expert"
+  },
+  {
+    "id": 197,
+    "word": "prominent",
+    "pos": "形容詞",
+    "meaning": "著名な・目立つ",
+    "level": 3,
+    "example_scene": "人物・デザイン",
+    "similar": "well-known, notable, outstanding"
+  },
+  {
+    "id": 198,
+    "word": "prospective",
+    "pos": "形容詞",
+    "meaning": "将来の・見込みのある",
+    "level": 3,
+    "example_scene": "採用・顧客",
+    "similar": "potential, future, expected"
+  },
+  {
+    "id": 199,
+    "word": "rationale",
+    "pos": "名詞",
+    "meaning": "根拠・理由",
+    "level": 3,
+    "example_scene": "提案・判断",
+    "similar": "reason, justification, basis"
+  },
+  {
+    "id": 200,
+    "word": "reconcile",
+    "pos": "動詞",
+    "meaning": "照合する・和解させる",
+    "level": 3,
+    "example_scene": "会計・対立",
+    "similar": "match, settle, resolve"
+  },
+  {
+    "id": 201,
+    "word": "redundant",
+    "pos": "形容詞",
+    "meaning": "余剰の・冗長な",
+    "level": 3,
+    "example_scene": "リストラ・文章",
+    "similar": "unnecessary, excess, laid off"
+  },
+  {
+    "id": 202,
+    "word": "reputable",
+    "pos": "形容詞",
+    "meaning": "評判の良い・信頼できる",
+    "level": 3,
+    "example_scene": "企業・人物",
+    "similar": "respected, reliable, well-known"
+  },
+  {
+    "id": 203,
+    "word": "scrutiny",
+    "pos": "名詞",
+    "meaning": "精査・詳細な検討",
+    "level": 3,
+    "example_scene": "監査・審査",
+    "similar": "examination, review, inspection"
+  },
+  {
+    "id": 204,
+    "word": "sophisticated",
+    "pos": "形容詞",
+    "meaning": "洗練された・高度な",
+    "level": 3,
+    "example_scene": "製品・顧客",
+    "similar": "advanced, refined, complex"
+  },
+  {
+    "id": 205,
+    "word": "stimulate",
+    "pos": "動詞",
+    "meaning": "刺激する・促進する",
+    "level": 3,
+    "example_scene": "経済・モチベーション",
+    "similar": "encourage, boost, promote"
+  },
+  {
+    "id": 206,
+    "word": "stringent",
+    "pos": "形容詞",
+    "meaning": "厳格な・厳しい",
+    "level": 3,
+    "example_scene": "規制・基準",
+    "similar": "strict, rigorous, demanding"
+  },
+  {
+    "id": 207,
+    "word": "substantial",
+    "pos": "形容詞",
+    "meaning": "実質的な・相当な",
+    "level": 3,
+    "example_scene": "投資・変化",
+    "similar": "significant, considerable, large"
+  },
+  {
+    "id": 208,
+    "word": "surplus",
+    "pos": "名詞/形容詞",
+    "meaning": "余剰・黒字",
+    "level": 3,
+    "example_scene": "財務・在庫",
+    "similar": "excess, extra, overflow"
+  },
+  {
+    "id": 209,
+    "word": "sustainable",
+    "pos": "形容詞",
+    "meaning": "持続可能な",
+    "level": 3,
+    "example_scene": "環境・経営",
+    "similar": "long-term, viable, green"
+  },
+  {
+    "id": 210,
+    "word": "tangible",
+    "pos": "形容詞",
+    "meaning": "有形の・具体的な",
+    "level": 3,
+    "example_scene": "資産・成果",
+    "similar": "concrete, physical, real"
+  },
+  {
+    "id": 211,
+    "word": "terminate",
+    "pos": "動詞",
+    "meaning": "終了する・解雇する",
+    "level": 3,
+    "example_scene": "契約・雇用",
+    "similar": "end, cancel, dismiss"
+  },
+  {
+    "id": 212,
+    "word": "transaction",
+    "pos": "名詞",
+    "meaning": "取引・処理",
+    "level": 3,
+    "example_scene": "財務・IT",
+    "similar": "deal, trade, operation"
+  },
+  {
+    "id": 213,
+    "word": "transparency",
+    "pos": "名詞",
+    "meaning": "透明性",
+    "level": 3,
+    "example_scene": "経営・報告",
+    "similar": "openness, clarity, honesty"
+  },
+  {
+    "id": 214,
+    "word": "undermine",
+    "pos": "動詞",
+    "meaning": "損なう・弱体化させる",
+    "level": 3,
+    "example_scene": "信頼・計画",
+    "similar": "weaken, damage, erode"
+  },
+  {
+    "id": 215,
+    "word": "validate",
+    "pos": "動詞",
+    "meaning": "検証する・承認する",
+    "level": 3,
+    "example_scene": "データ・申請",
+    "similar": "confirm, verify, approve"
+  },
+  {
+    "id": 216,
+    "word": "viable",
+    "pos": "形容詞",
+    "meaning": "実行可能な",
+    "level": 3,
+    "example_scene": "計画・ビジネス",
+    "similar": "feasible, workable, practical"
+  },
+  {
+    "id": 217,
+    "word": "vulnerable",
+    "pos": "形容詞",
+    "meaning": "脆弱な・被害を受けやすい",
+    "level": 3,
+    "example_scene": "セキュリティ・リスク",
+    "similar": "weak, exposed, at risk"
+  },
+  {
+    "id": 218,
+    "word": "waive",
+    "pos": "動詞",
+    "meaning": "放棄する・免除する",
+    "level": 3,
+    "example_scene": "権利・手数料",
+    "similar": "give up, forgo, exempt"
+  },
+  {
+    "id": 219,
+    "word": "yield",
+    "pos": "動詞/名詞",
+    "meaning": "生み出す・利回り",
+    "level": 3,
+    "example_scene": "投資・農業",
+    "similar": "produce, generate, return"
+  },
+  {
+    "id": 220,
+    "word": "procurement",
+    "pos": "名詞",
+    "meaning": "調達",
+    "level": 3,
+    "example_scene": "購買・サプライ",
+    "similar": "purchasing, acquisition, sourcing"
+  },
+  {
+    "id": 221,
+    "word": "proprietary",
+    "pos": "形容詞",
+    "meaning": "独自の・専有の",
+    "level": 3,
+    "example_scene": "技術・知財",
+    "similar": "private, exclusive, patented"
+  },
+  {
+    "id": 222,
+    "word": "consortium",
+    "pos": "名詞",
+    "meaning": "コンソーシアム・企業連合",
+    "level": 3,
+    "example_scene": "業界・プロジェクト",
+    "similar": "alliance, group, partnership"
+  },
+  {
+    "id": 223,
+    "word": "expedite",
+    "pos": "動詞",
+    "meaning": "促進する・迅速に処理する",
+    "level": 3,
+    "example_scene": "物流・業務",
+    "similar": "speed up, accelerate, rush"
+  },
+  {
+    "id": 224,
+    "word": "leverage",
+    "pos": "動詞/名詞",
+    "meaning": "活用する・てこの力",
+    "level": 3,
+    "example_scene": "経営・交渉",
+    "similar": "use, utilize, advantage"
+  },
+  {
+    "id": 225,
+    "word": "mitigation",
+    "pos": "名詞",
+    "meaning": "軽減・緩和",
+    "level": 3,
+    "example_scene": "リスク管理",
+    "similar": "reduction, alleviation"
+  },
+  {
+    "id": 226,
+    "word": "mediate",
+    "pos": "動詞",
+    "meaning": "仲裁する・調停する",
+    "level": 3,
+    "example_scene": "紛争・交渉",
+    "similar": "arbitrate, negotiate, resolve"
+  },
+  {
+    "id": 227,
+    "word": "perpetual",
+    "pos": "形容詞",
+    "meaning": "永続的な・無期限の",
+    "level": 3,
+    "example_scene": "契約・ライセンス",
+    "similar": "permanent, endless, continuous"
+  },
+  {
+    "id": 228,
+    "word": "statutory",
+    "pos": "形容詞",
+    "meaning": "法定の・法律で定められた",
+    "level": 3,
+    "example_scene": "法務・コンプライアンス",
+    "similar": "legal, regulatory, mandatory"
+  },
+  {
+    "id": 229,
+    "word": "accrue",
+    "pos": "動詞",
+    "meaning": "蓄積する・発生する",
+    "level": 3,
+    "example_scene": "利息・休暇",
+    "similar": "accumulate, build up, earn"
+  },
+  {
+    "id": 230,
+    "word": "equity",
+    "pos": "名詞",
+    "meaning": "株式・公平性・自己資本",
+    "level": 3,
+    "example_scene": "財務・法律",
+    "similar": "shares, fairness, ownership"
+  },
+  {
+    "id": 231,
+    "word": "fiscal",
+    "pos": "形容詞",
+    "meaning": "財政の・会計年度の",
+    "level": 3,
+    "example_scene": "予算・決算",
+    "similar": "financial, budgetary"
+  },
+  {
+    "id": 232,
+    "word": "governance",
+    "pos": "名詞",
+    "meaning": "ガバナンス・統治",
+    "level": 3,
+    "example_scene": "経営・行政",
+    "similar": "management, oversight, control"
+  },
+  {
+    "id": 233,
+    "word": "indemnify",
+    "pos": "動詞",
+    "meaning": "補償する・免責する",
+    "level": 3,
+    "example_scene": "保険・契約",
+    "similar": "compensate, protect, cover"
+  },
+  {
+    "id": 234,
+    "word": "jurisdiction",
+    "pos": "名詞",
+    "meaning": "管轄権・裁判権",
+    "level": 3,
+    "example_scene": "法務・国際",
+    "similar": "authority, territory, control"
+  },
+  {
+    "id": 235,
+    "word": "liquidate",
+    "pos": "動詞",
+    "meaning": "清算する・換金する",
+    "level": 3,
+    "example_scene": "財務・倒産",
+    "similar": "sell off, close, settle"
+  },
+  {
+    "id": 236,
+    "word": "niche",
+    "pos": "名詞/形容詞",
+    "meaning": "ニッチ市場・特定の",
+    "level": 3,
+    "example_scene": "マーケティング",
+    "similar": "specialized, specific, targeted"
+  },
+  {
+    "id": 237,
+    "word": "paradigm",
+    "pos": "名詞",
+    "meaning": "パラダイム・典型例",
+    "level": 3,
+    "example_scene": "革新・思考",
+    "similar": "model, framework, example"
+  },
+  {
+    "id": 238,
+    "word": "portfolio",
+    "pos": "名詞",
+    "meaning": "ポートフォリオ・作品集",
+    "level": 3,
+    "example_scene": "投資・採用",
+    "similar": "collection, holdings, works"
+  },
+  {
+    "id": 239,
+    "word": "scalable",
+    "pos": "形容詞",
+    "meaning": "拡張可能な",
+    "level": 3,
+    "example_scene": "IT・ビジネス",
+    "similar": "expandable, flexible, adaptable"
+  },
+  {
+    "id": 240,
+    "word": "synergy",
+    "pos": "名詞",
+    "meaning": "相乗効果",
+    "level": 3,
+    "example_scene": "M&A・協業",
+    "similar": "cooperation benefit, combined effect"
+  },
+  {
+    "id": 241,
+    "word": "turnaround",
+    "pos": "名詞",
+    "meaning": "業績回復・転換",
+    "level": 3,
+    "example_scene": "経営・物流",
+    "similar": "recovery, reversal, improvement"
+  },
+  {
+    "id": 242,
+    "word": "utilization",
+    "pos": "名詞",
+    "meaning": "活用・稼働率",
+    "level": 3,
+    "example_scene": "リソース・設備",
+    "similar": "use, application, efficiency"
+  },
+  {
+    "id": 243,
+    "word": "workload",
+    "pos": "名詞",
+    "meaning": "業務量・作業負荷",
+    "level": 3,
+    "example_scene": "人事・プロジェクト",
+    "similar": "tasks, volume, burden"
+  },
+  {
+    "id": 244,
+    "word": "offset",
+    "pos": "動詞",
+    "meaning": "相殺する・補う",
+    "level": 3,
+    "example_scene": "会計・環境",
+    "similar": "compensate, balance, neutralize"
+  },
+  {
+    "id": 245,
+    "word": "retention",
+    "pos": "名詞",
+    "meaning": "維持・定着率",
+    "level": 3,
+    "example_scene": "顧客・人事",
+    "similar": "keeping, maintenance, loyalty"
+  },
+  {
+    "id": 246,
+    "word": "acquisition",
+    "pos": "名詞",
+    "meaning": "買収・取得",
+    "level": 3,
+    "example_scene": "M&A・不動産",
+    "similar": "purchase, takeover, merger"
+  },
+  {
+    "id": 247,
+    "word": "compliance",
+    "pos": "名詞",
+    "meaning": "コンプライアンス・法令遵守",
+    "level": 3,
+    "example_scene": "法務・規制",
+    "similar": "adherence, conformity, observance"
+  },
+  {
+    "id": 248,
+    "word": "diversification",
+    "pos": "名詞",
+    "meaning": "多角化",
+    "level": 3,
+    "example_scene": "投資・事業",
+    "similar": "variety, expansion, spread"
+  },
+  {
+    "id": 249,
+    "word": "feasibility",
+    "pos": "名詞",
+    "meaning": "実現可能性",
+    "level": 3,
+    "example_scene": "計画・調査",
+    "similar": "viability, practicality, possibility"
+  },
+  {
+    "id": 250,
+    "word": "incentivize",
+    "pos": "動詞",
+    "meaning": "動機付けする",
+    "level": 3,
+    "example_scene": "営業・人事",
+    "similar": "motivate, encourage, reward"
+  },
+  {
+    "id": 251,
+    "word": "insolvency",
+    "pos": "名詞",
+    "meaning": "支払不能・倒産",
+    "level": 3,
+    "example_scene": "財務・法律",
+    "similar": "bankruptcy, default, failure"
+  },
+  {
+    "id": 252,
+    "word": "integration",
+    "pos": "名詞",
+    "meaning": "統合",
+    "level": 3,
+    "example_scene": "M&A・IT",
+    "similar": "combination, merging, unification"
+  },
+  {
+    "id": 253,
+    "word": "monetize",
+    "pos": "動詞",
+    "meaning": "収益化する",
+    "level": 3,
+    "example_scene": "ビジネスモデル",
+    "similar": "commercialize, profit from"
+  },
+  {
+    "id": 254,
+    "word": "precedent",
+    "pos": "名詞",
+    "meaning": "前例・先例",
+    "level": 3,
+    "example_scene": "法律・判断",
+    "similar": "example, prior case, standard"
+  },
+  {
+    "id": 255,
+    "word": "recourse",
+    "pos": "名詞",
+    "meaning": "頼ること・求償権",
+    "level": 3,
+    "example_scene": "法律・対策",
+    "similar": "option, remedy, resort"
+  },
+  {
+    "id": 256,
+    "word": "stakeholder",
+    "pos": "名詞",
+    "meaning": "利害関係者",
+    "level": 3,
+    "example_scene": "経営・プロジェクト",
+    "similar": "interested party, shareholder"
+  },
+  {
+    "id": 257,
+    "word": "trajectory",
+    "pos": "名詞",
+    "meaning": "軌跡・推移",
+    "level": 3,
+    "example_scene": "成長・データ",
+    "similar": "path, trend, course"
+  },
+  {
+    "id": 258,
+    "word": "succession",
+    "pos": "名詞",
+    "meaning": "継承・後継",
+    "level": 3,
+    "example_scene": "事業・人事",
+    "similar": "inheritance, continuation, series"
+  },
+  {
+    "id": 259,
+    "word": "retrofit",
+    "pos": "動詞",
+    "meaning": "改良・後付けする",
+    "level": 3,
+    "example_scene": "設備・IT",
+    "similar": "upgrade, update, modify"
+  },
+  {
+    "id": 260,
+    "word": "upfront",
+    "pos": "形容詞/副詞",
+    "meaning": "前払いの・率直な",
+    "level": 3,
+    "example_scene": "契約・交渉",
+    "similar": "in advance, direct, initial"
+  },
+  {
+    "id": 261,
+    "word": "vested",
+    "pos": "形容詞",
+    "meaning": "既得権の・権利が確定した",
+    "level": 3,
+    "example_scene": "年金・権利",
+    "similar": "established, entitled, secured"
+  },
+  {
+    "id": 262,
+    "word": "hedging",
+    "pos": "名詞",
+    "meaning": "リスクヘッジ",
+    "level": 3,
+    "example_scene": "金融・リスク",
+    "similar": "protection, risk management"
+  },
+  {
+    "id": 263,
+    "word": "liquidation",
+    "pos": "名詞",
+    "meaning": "清算・資産処分",
+    "level": 3,
+    "example_scene": "倒産・解散",
+    "similar": "dissolution, winding up"
+  },
+  {
+    "id": 264,
+    "word": "outsourcing",
+    "pos": "名詞",
+    "meaning": "業務委託",
+    "level": 3,
+    "example_scene": "コスト削減",
+    "similar": "contracting out, offshoring"
+  },
+  {
+    "id": 265,
+    "word": "due diligence",
+    "pos": "名詞句",
+    "meaning": "デューデリジェンス・事前調査",
+    "level": 3,
+    "example_scene": "M&A・投資",
+    "similar": "investigation, audit, review"
+  },
+  {
+    "id": 266,
+    "word": "revenue stream",
+    "pos": "名詞句",
+    "meaning": "収益源",
+    "level": 3,
+    "example_scene": "ビジネスモデル",
+    "similar": "income source, profit channel"
+  },
+  {
+    "id": 267,
+    "word": "forthcoming",
+    "pos": "形容詞",
+    "meaning": "今後の・率直な",
+    "level": 3,
+    "example_scene": "イベント・性格",
+    "similar": "upcoming, future, open"
+  },
+  {
+    "id": 268,
+    "word": "proximity",
+    "pos": "名詞",
+    "meaning": "近さ・近接",
+    "level": 3,
+    "example_scene": "立地・関係",
+    "similar": "closeness, nearness"
+  },
+  {
+    "id": 269,
+    "word": "assertion",
+    "pos": "名詞",
+    "meaning": "主張・断言",
+    "level": 3,
+    "example_scene": "議論・法律",
+    "similar": "claim, statement, declaration"
+  },
+  {
+    "id": 270,
+    "word": "incumbent",
+    "pos": "形容詞/名詞",
+    "meaning": "現職の・現職者",
+    "level": 3,
+    "example_scene": "人事・選挙",
+    "similar": "current holder, existing"
+  },
+  {
+    "id": 271,
+    "word": "appreciation",
+    "pos": "名詞",
+    "meaning": "感謝・評価・値上がり",
+    "level": 3,
+    "example_scene": "メール・財務",
+    "similar": "gratitude, recognition, increase"
+  },
+  {
+    "id": 272,
+    "word": "controversy",
+    "pos": "名詞",
+    "meaning": "論争・議論",
+    "level": 3,
+    "example_scene": "メディア・倫理",
+    "similar": "dispute, debate, conflict"
+  },
+  {
+    "id": 273,
+    "word": "coherent",
+    "pos": "形容詞",
+    "meaning": "首尾一貫した",
+    "level": 3,
+    "example_scene": "提案・議論",
+    "similar": "logical, consistent, clear"
+  },
+  {
+    "id": 274,
+    "word": "reimbursement",
+    "pos": "名詞",
+    "meaning": "費用の払い戻し",
+    "level": 3,
+    "example_scene": "出張・経費",
+    "similar": "refund, repayment"
+  },
+  {
+    "id": 275,
+    "word": "franchise",
+    "pos": "動詞",
+    "meaning": "フランチャイズ権を与える",
+    "level": 3,
+    "example_scene": "チェーン展開",
+    "similar": "license, authorize"
+  },
+  {
+    "id": 276,
+    "word": "aggregate",
+    "pos": "形容詞",
+    "meaning": "合計の・総",
+    "level": 3,
+    "example_scene": "統計・財務",
+    "similar": "total, combined, overall"
+  },
+  {
+    "id": 277,
+    "word": "interim",
+    "pos": "名詞",
+    "meaning": "暫定期間",
+    "level": 3,
+    "example_scene": "経営・人事",
+    "similar": "transition period, temporary phase"
+  },
+  {
+    "id": 278,
+    "word": "cumulative",
+    "pos": "形容詞",
+    "meaning": "蓄積された",
+    "level": 3,
+    "example_scene": "データ・業績",
+    "similar": "accumulated, total, running"
+  },
+  {
+    "id": 279,
+    "word": "mutual",
+    "pos": "形容詞",
+    "meaning": "お互いの・双方の",
+    "level": 3,
+    "example_scene": "協定・合意",
+    "similar": "reciprocal, joint, shared"
+  },
+  {
+    "id": 280,
+    "word": "viable",
+    "pos": "形容詞",
+    "meaning": "採算の取れる",
+    "level": 3,
+    "example_scene": "事業計画",
+    "similar": "profitable, sustainable, feasible"
+  },
+  {
+    "id": 281,
+    "word": "redundant",
+    "pos": "形容詞",
+    "meaning": "不要になった・解雇された",
+    "level": 3,
+    "example_scene": "リストラ",
+    "similar": "laid off, dismissed, superfluous"
+  },
+  {
+    "id": 282,
+    "word": "stringent",
+    "pos": "形容詞",
+    "meaning": "要件が厳しい",
+    "level": 3,
+    "example_scene": "品質・審査",
+    "similar": "strict, tough, demanding"
+  },
+  {
+    "id": 283,
+    "word": "contingency",
+    "pos": "名詞",
+    "meaning": "偶発事態・緊急予備費",
+    "level": 3,
+    "example_scene": "リスク・予算",
+    "similar": "emergency fund, reserve, backup"
+  },
+  {
+    "id": 284,
+    "word": "benchmark",
+    "pos": "動詞",
+    "meaning": "基準と比較評価する",
+    "level": 3,
+    "example_scene": "業績・IT",
+    "similar": "measure against, compare, evaluate"
+  },
+  {
+    "id": 285,
+    "word": "leverage",
+    "pos": "名詞",
+    "meaning": "交渉上の優位・影響力",
+    "level": 3,
+    "example_scene": "交渉・M&A",
+    "similar": "bargaining power, advantage"
+  },
+  {
+    "id": 286,
+    "word": "capacity",
+    "pos": "名詞",
+    "meaning": "法的能力・資格",
+    "level": 3,
+    "example_scene": "法律・契約",
+    "similar": "authority, standing, competence"
+  },
+  {
+    "id": 287,
+    "word": "overhead",
+    "pos": "形容詞",
+    "meaning": "頭上の・上空の",
+    "level": 3,
+    "example_scene": "施設・物流",
+    "similar": "above, upper, elevated"
+  },
+  {
+    "id": 288,
+    "word": "outstanding",
+    "pos": "形容詞",
+    "meaning": "未処理の・未払いの",
+    "level": 3,
+    "example_scene": "請求・タスク",
+    "similar": "pending, unpaid, unresolved"
+  },
+  {
+    "id": 289,
+    "word": "projection",
+    "pos": "名詞",
+    "meaning": "事業将来予測",
+    "level": 3,
+    "example_scene": "投資・経営",
+    "similar": "financial forecast, outlook"
+  },
+  {
+    "id": 290,
+    "word": "mandate",
+    "pos": "名詞",
+    "meaning": "国民の信任・委任",
+    "level": 3,
+    "example_scene": "政治・選挙",
+    "similar": "authority, commission, sanction"
+  },
+  {
+    "id": 291,
+    "word": "transparency",
+    "pos": "名詞",
+    "meaning": "説明責任・情報公開",
+    "level": 3,
+    "example_scene": "IR・ESG",
+    "similar": "disclosure, openness, accountability"
+  },
+  {
+    "id": 292,
+    "word": "integrity",
+    "pos": "名詞",
+    "meaning": "データ整合性",
+    "level": 3,
+    "example_scene": "IT・システム",
+    "similar": "consistency, accuracy, reliability"
+  },
+  {
+    "id": 293,
+    "word": "succession",
+    "pos": "名詞",
+    "meaning": "一連・連続",
+    "level": 3,
+    "example_scene": "出来事・手続き",
+    "similar": "series, sequence, chain"
+  },
+  {
+    "id": 294,
+    "word": "endorsement",
+    "pos": "名詞",
+    "meaning": "小切手の裏書き",
+    "level": 3,
+    "example_scene": "金融・手形",
+    "similar": "countersignature, backing"
+  },
+  {
+    "id": 295,
+    "word": "fiscal",
+    "pos": "形容詞",
+    "meaning": "国家財政の",
+    "level": 3,
+    "example_scene": "税制・政策",
+    "similar": "governmental, public finance"
+  },
+  {
+    "id": 296,
+    "word": "sustainable",
+    "pos": "形容詞",
+    "meaning": "環境に配慮した",
+    "level": 3,
+    "example_scene": "ESG・環境",
+    "similar": "eco-friendly, green, responsible"
+  },
+  {
+    "id": 297,
+    "word": "paradigm shift",
+    "pos": "名詞句",
+    "meaning": "パラダイムシフト・大転換",
+    "level": 3,
+    "example_scene": "産業・技術",
+    "similar": "revolution, transformation, disruption"
+  },
+  {
+    "id": 298,
+    "word": "due diligence",
+    "pos": "名詞句",
+    "meaning": "善管注意義務",
+    "level": 3,
+    "example_scene": "取締役・法律",
+    "similar": "duty of care, fiduciary duty"
+  },
+  {
+    "id": 299,
+    "word": "conflict of interest",
+    "pos": "名詞句",
+    "meaning": "利益相反",
+    "level": 3,
+    "example_scene": "法務・コンプライアンス",
+    "similar": "bias, competing interests"
+  },
+  {
+    "id": 300,
+    "word": "bottom line",
+    "pos": "名詞句",
+    "meaning": "最終利益・結論・要点",
+    "level": 3,
+    "example_scene": "財務・議論",
+    "similar": "net profit, conclusion, key point"
+  }
+]
