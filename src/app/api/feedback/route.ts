@@ -13,7 +13,7 @@ import { RESPONSE_SCHEMA } from "@/lib/prompts/schema";
 import type { FeedbackRequest } from "@/lib/types";
 
 export const runtime = "nodejs";
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 const DEFAULT_MODEL = "claude-sonnet-5";
 

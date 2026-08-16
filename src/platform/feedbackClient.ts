@@ -5,7 +5,9 @@
  * 検証（V1〜V6）は src/lib/aiResponse.ts の純関数が行う。ここでは持たない。
  *
  * ★25秒で打ち切り、超えたら pending 方式に落ちる（docs/spec.md §10-7）。
- *   Route Handler 側の maxDuration は30秒なので、クライアントが先に諦める。
+ *   Route Handler 側の maxDuration は60秒なので、クライアントが必ず先に諦める。
+ *   この25000という値は STEP 5 の画面設計が固まるまでの暫定値（docs/spec.md §10-12 判断2）。
+ *   本番実測は 21.47〜28.34秒で、4回中2回がこの値を超えている（§10-11 d）。
  */
 import type { FeedbackRequest } from "@/lib/types";
 
