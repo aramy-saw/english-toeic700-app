@@ -504,7 +504,8 @@ export const MAX_SESSION_HISTORY = 50;
 
 - スキーマ強制は `output_config: { format: { type: "json_schema", schema } }`。旧 `output_format` は非推奨
 - **全オブジェクトに `additionalProperties: false` が必要**
-- **`maxLength` / `minLength` / `maxItems` / `minimum` / `maximum` は非対応。**「1〜2文で」「最大5枚」はプロンプト本文で指示する。`enum` と `anyOf` は使える
+- **`maxLength` / `minLength` / `maxItems` / `minimum` / `maximum` は非対応。**「`pattern_summary` は1〜2文で」「**`review_cards` は最大5枚**」はプロンプト本文で指示する。`enum` と `anyOf` は使える
+  - ★この「最大5枚」は**出力の `review_cards`** を指す。**入力の `pending` の上限（`MAX_PENDING_PER_CALL = 5`）とは別物**。詳細は §10-10
 - **`temperature` / `top_p` / `top_k` は非デフォルト値を渡すと400エラー。** 渡さない
 - **adaptive thinking がデフォルトON。** `max_tokens` は thinking と本文の合算上限なので余裕を持たせる（途中で切れると検証層がエラー扱いにする）
 - 呼び出しは**10問終了後に1回だけ**。「もう1セット」をすれば2回目が発生する（1セット＝1回）
@@ -561,11 +562,10 @@ export type FeedbackRequest = {
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id","word","cause_label","explanation","usage_note","example_en","example_ja"],
+        "required": ["id","word","explanation","usage_note","example_en","example_ja"],
         "properties": {
           "id":          { "type": "integer" },
           "word":        { "type": "string" },
-          "cause_label": { "type": "string" },
           "explanation": { "type": "string" },
           "usage_note":  { "type": "string" },
           "example_en":  { "type": "string" },
@@ -580,6 +580,8 @@ export type FeedbackRequest = {
 ```
 
 **`id` を必須にするのが要点。** `word` だけだと `mutual` が返ってきたとき 192 と 279 のどちらか判別できない。
+
+**`cause_label` はスキーマに含めない（2026-08-16）。** cause から一意に決まる値なのでAIに生成させない。アプリ側が決定して `CardContent` に格納する。詳細は §10-9。
 
 **`suggested_tempo` は4値 enum＋必須**にする。「省略できる」形にすると、省略が意図的だったのか出力漏れだったのか区別できない。変更不要なら `"none"` を明示させる。
 
@@ -637,6 +639,89 @@ AIが落ちてもアプリは死なない。SCORE・正誤・出題・テンポ�
 - 入力を最小限バリデート（`results.length` が 1..40、`pending.length ≤ 5`）してから呼ぶ
 - APIキー未設定時は500ではなく「pending方式に落とす」レスポンスを返す
 - クライアント側にも `AbortController` で25秒のタイムアウトを置き、超えたら pending 方式に落ちる
+
+### 10-8. AIの役割・口調・禁止事項（2026-08-16 確定）
+
+出典：`ENGLISH700_開発手順書.md` STEP 4-1 より転記。
+
+**役割の定義（最重要）**
+
+AIに原因を「分析」させない。cause はアプリ側で確定済み。
+AIの役割は「確定した原因を、鈴木さんの言葉で説明する」こと。
+
+- 役割：TOEIC指導の経験が長い講師。EduBridge社の教育ノウハウを背景に持つ
+- 相手：32歳会社員の鈴木さん。通勤30分＋昼休み15分。過去に3日で挫折
+- 口調：励ましすぎない。事実を淡々と、しかし具体的に
+- 禁止：「頑張りましょう」のような汎用的な励まし。一般論
+
+**禁止事項（明文化）**
+
+1. 原因の推測・言い換え。cause はアプリが確定した事実として扱い、
+   AIはそれを覆したり別の原因を提示したりしない
+2. 汎用的な励まし（「頑張りましょう」「その調子です」等）
+3. 学習法の一般論（「毎日続けることが大切」等）
+4. 語数・時間・スコアの創作。渡された数値以外を書かない
+
+### 10-9. 各フィールドに何を書かせるか（2026-08-16 確定）
+
+| フィールド | 内容 | 出典 |
+|---|---|---|
+| `cause_label` | 確定した cause の日本語表記（下表の固定文言）<br>※ `cause_label` はレスポンススキーマに含めない（2026-08-16）。AI は生成せず、アプリ側が cause から上表のマッピングで決定して `CardContent` に格納する。 | 本節で確定 |
+| `explanation` | なぜ間違えたか／なぜ迷ったかの説明 | 手順書 STEP 4-1 |
+| `usage_note` | `similar` を使った使い分けの説明 | 手順書 STEP 4-1 ／ 構想と方針.md §4発見1 |
+| `example_en` | `example_scene` を使ったビジネス文脈の例文（英文） | 本節で確定 |
+| `example_ja` | `example_en` の和訳 | 本節で確定 |
+
+**`cause_label` の固定文言（AIに生成させない。アプリ側で決定して渡す）**
+
+| cause | cause_label |
+|---|---|
+| `pos_mismatch` | 品詞の取り違え |
+| `weak_memory` | 意味の記憶があいまい |
+| `hesitant` | 思い出すのに時間がかかった |
+
+理由：`cause_label` は cause の日本語表記であり、AIに生成させると呼び出しごとに
+文言が揺れて同じ原因が別物に見える。「AIに原因を推測させない」原則（§10-2 の
+`causeCounts` の項）の延長として、ラベルもアプリ側で確定させる。
+
+**`example_en` / `example_ja` を分けた理由（2026-08-16 明確化）**
+
+構想と方針.md・手順書はどちらも `example`（単数、英文＋和訳を1つに）だった。
+spec.md で2フィールドに分割したが、両文書に分割理由の記述がなかったためここに明記する。
+
+1. 和訳を別フィールドにすると、UI で英文を先に見せて和訳を後から開ける。
+   課題①（覚えた→使えない）に対しては、まず英文で考えさせるほうが効く
+2. 1フィールドに詰めると、文字数制御とパースが両方あいまいになる
+3. STEP 3 で `CardContent` が `exampleEn` / `exampleJa` で確定済み
+
+### 10-10. `review_cards` の枚数と優先順位（2026-08-16 確定）
+
+**出力上限は5枚。**
+
+§10-1 の「最大5枚」は `review_cards`（出力）を指す。
+`MAX_PENDING_PER_CALL = 5` は `pending`（入力）の上限であり、**別物**である。
+
+**優先順位**
+
+1. `pending`（`createdAt` 昇順）
+2. 今回の誤答（`is_correct = false`）
+3. 今回の非即答正解（`is_correct = true` かつ `is_instant = false`）
+
+上限に達した時点で打ち切る。§10-5 V3 のとおり、欠けた語は `pending` のまま残り、
+次回の呼び出しで埋まる。
+
+理由：
+
+- 復習対象2カテゴリは10問中最大10語に達しうるが、15枚生成はレイテンシが読めず、
+  `analyzing` 待機が長いと UX が崩れる
+- `pending` を先に消化することでバックログの累積を防ぐ
+
+**枚数の強制方法**
+
+JSON Schema の `maxItems` は使えないため、二重で担保する。
+
+1. プロンプト本文で「最大5枚」を明示
+2. アプリ側で `slice(0, 5)`
 
 ---
 
