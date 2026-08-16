@@ -205,3 +205,28 @@ export type FeedbackResponse = {
   next_message: string;
   suggested_tempo: TempoId | "none";
 };
+
+// ─────────────────────────────────────────────
+// STEP 6 段階1 で追記（定義の根拠は docs/spec.md §9-2）
+// localStorage に保存する4キーのうち、settings と sessions の型。
+// cards（CardMap）と wordStats（WordStatMap）は STEP 3 で転記済み。
+// ─────────────────────────────────────────────
+
+/** english700:settings */
+export type Settings = { tempo: TempoId };
+
+/** english700:sessions 新しい順・最大 MAX_SESSION_HISTORY 件 */
+export type SessionRecord = {
+  finishedAt: number;
+  /** "2026-08-19"。★クライアントでJST算出 */
+  dateLabel: string;
+  /** ★スコアと必ず対で保存 */
+  tempo: TempoId;
+  score: number;
+  /** 問題数可変に耐える */
+  maxScore: number;
+  questionCount: number;
+  accuracyRate: number;
+  instantRate: number;
+  aiStatus: "ready" | "pending";
+};
