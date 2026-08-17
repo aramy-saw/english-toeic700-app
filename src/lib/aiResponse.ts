@@ -6,7 +6,6 @@
  */
 import { causeLabel } from "./diagnosis";
 import { idKey } from "./ids";
-import { MAX_REVIEW_CARDS } from "./prompts/feedback";
 import type {
   AiReviewCard,
   CardMap,
@@ -91,6 +90,38 @@ function verifySuggestedTempo(
   return "normal";
 }
 
+/**
+ * ストリーミング中に**1枚だけ**を検証する（2026-08-18・§10-5 / §12-6 d）。
+ *
+ * ★全件そろう前に表示するので、全体を待つ V1 では間に合わない。
+ *   形（V1 相当）・幻覚（V2）・文字数（V5）を1枚ずつ適用する。
+ *   通らなければ **null を返して黙って捨てる**。表示しなければ害はない。
+ *
+ * ★最終的な正典は completion 時の validateAiResponse。
+ *   こちらは表示を先行させるための前倒しであり、置き換えではない。
+ */
+export function validateStreamedCard(
+  raw: unknown,
+  ctx: ValidationContext,
+): AiReviewCard | null {
+  const card = parseCard(raw);
+  if (card === null) return null;
+
+  // V2: 出題していない id を弾く
+  if (!ctx.presentedIds.includes(card.id)) return null;
+  const entry = ctx.byId.get(card.id);
+  if (entry !== undefined && entry.word !== card.word) return null;
+
+  // V5: 文字列長の上限
+  return {
+    ...card,
+    explanation: clip(card.explanation, LIMITS.explanation),
+    usage_note: clip(card.usage_note, LIMITS.usage_note),
+    example_en: clip(card.example_en, LIMITS.example_en),
+    example_ja: clip(card.example_ja, LIMITS.example_ja),
+  };
+}
+
 /** docs/spec.md §10-5 の V1〜V6 */
 export function validateAiResponse(
   raw: unknown,
@@ -161,12 +192,12 @@ export function validateAiResponse(
     example_ja: clip(c.example_ja, LIMITS.example_ja),
   }));
 
-  // ── V6: ここで初めて5枚に切る ──
+  // ── V6: 撤廃（2026-08-18）。上限を設けず、届いた分をすべて通す（§10-10） ──
   return {
     ok: true,
     response: {
       pattern_summary: clip(parsed.pattern_summary, LIMITS.pattern_summary),
-      review_cards: clipped.slice(0, MAX_REVIEW_CARDS),
+      review_cards: clipped,
       next_message: clip(parsed.next_message, LIMITS.next_message),
       suggested_tempo: suggested,
     },

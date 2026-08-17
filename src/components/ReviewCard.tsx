@@ -64,11 +64,14 @@ export function ReviewCardView({
         </p>
       ) : (
         <div className="mt-[var(--s3)] flex flex-col gap-[var(--s3)]">
-          {/* cause が変わって pending に戻っているあいだも、古い説明は読める（§11） */}
-          {card.state === "pending" && (
-            <p className="text-[16px] text-text-mute">説明を更新中です</p>
-          )}
-
+          {/*
+           * ★2026-08-18 に「説明を更新中です」を削除。
+           *   §11 の「cause が変わったら pending に戻す（content は残す）」により、
+           *   説明が入っているカードにも state==="pending" が付きうる。
+           *   その結果、説明が読める状態なのに「更新中です」が出たままになっていた。
+           *   **読める説明があるなら、状態の注記は要らない。**
+           *   説明が無いときだけ「まだ説明がありません」を出す（上の分岐）。
+           */}
           <p className="text-[17px]">{content.explanation}</p>
           <p className="text-[16px] text-text-sub">
             使い分け：{content.usageNote}

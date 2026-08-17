@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { idKey } from "@/lib/ids";
 import {
   applySessionToCards,
-  MAX_PENDING_PER_CALL,
   removeCard,
   selectPendingForCall,
 } from "@/lib/reviewCards";
@@ -156,8 +155,8 @@ describe("applySessionToCards", () => {
 });
 
 describe("selectPendingForCall", () => {
-  it("pending を createdAt の古い順に最大5件まで返す", () => {
-    // なぜ：プロンプトの肥大を防ぎつつ、数回で必ず追いつくための上限
+  it("★pending を createdAt の古い順に全件返す（2026-08-18 に上限を撤廃）", () => {
+    // 上限で切ると、渡されなかった語に説明が付かないまま残り続ける（§10-10）
     const cards: CardMap = {};
     for (let i = 1; i <= 8; i++) {
       cards[idKey(i)] = card(i, { createdAt: 1000 + i, state: "pending" });
@@ -165,8 +164,16 @@ describe("selectPendingForCall", () => {
     cards[idKey(99)] = card(99, { createdAt: 1, state: "ready" });
 
     const picked = selectPendingForCall(cards);
-    expect(picked).toHaveLength(MAX_PENDING_PER_CALL);
-    expect(picked.map((c) => c.id)).toEqual([1, 2, 3, 4, 5]);
+    expect(picked).toHaveLength(8);
+    expect(picked.map((c) => c.id)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+  });
+
+  it("limit を明示したときだけ絞る", () => {
+    const cards: CardMap = {};
+    for (let i = 1; i <= 8; i++) {
+      cards[idKey(i)] = card(i, { createdAt: 1000 + i, state: "pending" });
+    }
+    expect(selectPendingForCall(cards, 3).map((c) => c.id)).toEqual([1, 2, 3]);
   });
 });
 

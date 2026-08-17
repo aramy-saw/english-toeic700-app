@@ -13,8 +13,11 @@
 import { idKey } from "./ids";
 import type { AnsweredQuestion, CardMap, Cause, ReviewCard, WordId } from "./types";
 
-/** 1回のAI呼び出しで渡す pending の上限 */
-export const MAX_PENDING_PER_CALL = 5;
+/**
+ * 1回のAI呼び出しで渡す pending の上限。
+ * ★2026-08-18 に撤廃（docs/spec.md §10-10）。undefined で「全件」を意味する。
+ *   定数は互換のために残さず、`selectPendingForCall(cards)` を引数なしで呼ぶ。
+ */
 
 function createCard(a: AnsweredQuestion, cause: Cause, now: number): ReviewCard {
   const e = a.question.entry;
@@ -101,10 +104,10 @@ export function removeCard(cards: CardMap, id: WordId): CardMap {
 /** createdAt 昇順（古い順）に最大 limit 件 */
 export function selectPendingForCall(
   cards: CardMap,
-  limit: number = MAX_PENDING_PER_CALL,
+  limit?: number,
 ): ReviewCard[] {
-  return Object.values(cards)
+  const all = Object.values(cards)
     .filter((c) => c.state === "pending")
-    .sort((a, b) => a.createdAt - b.createdAt)
-    .slice(0, limit);
+    .sort((a, b) => a.createdAt - b.createdAt);
+  return limit === undefined ? all : all.slice(0, limit);
 }

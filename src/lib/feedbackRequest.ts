@@ -8,7 +8,7 @@
  * ★数えるのも判定するのもアプリ側。
  *   causeCounts / is_instant / cause は算出済みの値を渡す。AI に数えさせない（§10-2）。
  */
-import { MAX_PENDING_PER_CALL, selectPendingForCall } from "./reviewCards";
+import { selectPendingForCall } from "./reviewCards";
 import { maxScore, summarize } from "./session";
 import { TEMPO_THRESHOLD_MS, tempoLabel } from "./tempo";
 import type {
@@ -70,10 +70,10 @@ export function buildFeedbackRequest(input: {
   /**
    * ★createdAt 昇順で渡す。 selectCardTargets が配列順をそのまま信頼するため、
    *   ソートせずに渡すと §10-10 の優先順位が静かに壊れる。
-   *   selectPendingForCall がソートと5件の絞り込みの両方を担う。
+   *   selectPendingForCall がソートを担う。上限は撤廃した（2026-08-18）。
    */
   const pending: FeedbackRequest["pending"] = [];
-  for (const c of selectPendingForCall(cards, MAX_PENDING_PER_CALL)) {
+  for (const c of selectPendingForCall(cards)) {
     const e = input.wordlist.byId.get(c.id);
     // 配布データに無い id は落とす。similar / example_scene が引けず、
     // 空で送ると AI が「類義語なし」を根拠に説明を書いてしまう

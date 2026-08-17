@@ -7,8 +7,13 @@
 import { CAUSE_LABEL, causeLabel } from "../diagnosis";
 import type { Cause, FeedbackRequest, Level, WordId } from "../types";
 
-/** 出力する復習カードの上限（docs/spec.md §10-10） */
-export const MAX_REVIEW_CARDS = 5;
+/**
+ * ★2026-08-18 に上限を撤廃した（docs/spec.md §10-10）。
+ *   5枚で切ると、今回まちがえた語の一部に必ず説明が入らない
+ *   （＝「まだ説明がありません」のカードが残り続ける）。
+ *   枚数を絞っていた理由は待機時間だったが、それはストリーミングで解いた（§12-6 d）。
+ *   1枚ずつ届いた順に表示されるので、総数が増えても最初の1枚までの時間は変わらない。
+ */
 
 /** 1枚のカードを作らせる対象 */
 export type CardTarget = {
@@ -25,17 +30,15 @@ export type CardTarget = {
 };
 
 /**
- * docs/spec.md §10-10 の優先順位で対象を選び、最大5件に絞る。
+ * docs/spec.md §10-10 の優先順位で対象を選ぶ。**上限は設けない。**
  *   1. 今回の誤答  2. 今回の非即答正解  3. pending
  *
- * ★2026-08-18 に順序を反転した。
- *   従来は pending が先頭だったため、バックログが5件あると
+ * ★2026-08-18 に順序を反転し、上限を撤廃した。
+ *   従来は pending が先頭かつ5枚上限だったため、バックログがあると
  *   **今回作ったカードに今回の説明が1枚も入らなかった**（実測で確認）。
  *   「今回まちがえたことは、今回のうちに説明する」を優先する。
  *
- * ★代償：毎回5件以上まちがえ続けると、古い pending はいつまでも埋まらない。
- *   実装では対処しない。受け皿は `/review` の手動削除（§12-8）。
- *
+
  * ★req.pending は createdAt 昇順でソート済みである前提（§10-2 のコメント）。
  *   ここでは並べ替えず、配列順をそのまま信頼する。
  */
@@ -44,7 +47,7 @@ export function selectCardTargets(req: FeedbackRequest): CardTarget[] {
   const taken = new Set<WordId>();
 
   const push = (t: CardTarget) => {
-    if (out.length >= MAX_REVIEW_CARDS) return;
+    // 上限なし（2026-08-18）。重複だけを弾く
     if (taken.has(t.id)) return;
     taken.add(t.id);
     out.push(t);
@@ -170,7 +173,7 @@ export function buildFeedbackPrompt(req: FeedbackRequest): string {
   - ${CAUSE_LABEL.hesitant}: ${c.hesitant}件
 
 # 復習カードを作る対象（${targets.length}件）
-以下の語だけを対象にしてください。**最大${MAX_REVIEW_CARDS}枚です。これを超えないでください。**
+以下の語だけを対象にしてください。**${targets.length}件すべてについて1枚ずつ作ってください。**
 ここに無い語を返してはいけません。
 
 ${targets.map(formatTarget).join("\n\n")}

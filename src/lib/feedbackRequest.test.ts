@@ -250,15 +250,15 @@ describe("buildFeedbackRequest — pending", () => {
     expect(req.pending.map((p) => p.id)).toEqual([51, 52, 50]);
   });
 
-  it("最大5件に絞る（route.ts の validateRequest が6件以上を弾く）", () => {
+  it("★上限を設けず全件渡す（2026-08-18・§10-10）", () => {
     const cards: CardMap = {};
     for (let i = 0; i < 8; i++) {
       cards[String(60 + i)] = card({ id: 60 + i, createdAt: i });
     }
     const req = buildFeedbackRequest({ ...BASE, cards });
 
-    expect(req.pending).toHaveLength(5);
-    expect(req.pending.map((p) => p.id)).toEqual([60, 61, 62, 63, 64]);
+    expect(req.pending).toHaveLength(8);
+    expect(req.pending.map((p) => p.id)).toEqual([60, 61, 62, 63, 64, 65, 66, 67]);
   });
 
   it("配布データに無い id のカードは落とす（similar / example_scene が引けない）", () => {

@@ -13,7 +13,9 @@ import { RESPONSE_SCHEMA } from "@/lib/prompts/schema";
 import type { FeedbackRequest } from "@/lib/types";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+// ★2026-08-18 に 60 → 120。上限撤廃（§10-10）で1回の生成が長くなったため。
+//   クライアント側の打ち切りは90秒なので、サーバーが先に落ちることはない
+export const maxDuration = 120;
 
 const DEFAULT_MODEL = "claude-sonnet-5";
 
@@ -38,7 +40,8 @@ function validateRequest(body: unknown): FeedbackRequest | null {
   if (typeof b.session !== "object" || b.session === null) return null;
   if (!Array.isArray(b.results) || !Array.isArray(b.pending)) return null;
   if (b.results.length < 1 || b.results.length > 40) return null;
-  if (b.pending.length > 5) return null;
+  // pending の上限は撤廃（2026-08-18・§10-10）。暴走だけ防ぐ
+  if (b.pending.length > 300) return null;
   return body as FeedbackRequest;
 }
 
@@ -60,8 +63,18 @@ export async function POST(request: Request): Promise<Response> {
   const model = process.env.AI_MODEL ?? DEFAULT_MODEL;
   const client = new Anthropic({ apiKey });
 
+  /**
+   * ★ストリーミングで素通しする（2026-08-18・§12-6 d）。
+   *   モデルが書いた JSON の文字列を、届いた順にそのまま body へ流すだけ。
+   *   パースも検証もしない（Route Handler にロジックを持たせない）。
+   *
+   * ★成功は text/plain、失敗は application/json。
+   *   独自のプロトコルを作らず、Content-Type だけで区別する。
+   *   ストリーム開始後に切れた場合は、body がそこで終わる。
+   *   クライアントはそこまでに確定した分を保持する。
+   */
   try {
-    const message = await client.messages.create({
+    const stream = client.messages.stream({
       model,
       max_tokens: MAX_TOKENS,
       // temperature / top_p / top_k は渡さない（非デフォルト値は400エラー。§10-1）
@@ -71,16 +84,37 @@ export async function POST(request: Request): Promise<Response> {
       messages: [{ role: "user", content: buildFeedbackPrompt(req) }],
     });
 
-    const text = message.content
-      .filter((b): b is Anthropic.TextBlock => b.type === "text")
-      .map((b) => b.text)
-      .join("");
+    const body = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        const encoder = new TextEncoder();
+        try {
+          for await (const event of stream) {
+            if (
+              event.type === "content_block_delta" &&
+              event.delta.type === "text_delta"
+            ) {
+              controller.enqueue(encoder.encode(event.delta.text));
+            }
+          }
+        } catch {
+          // 途中で切れてもエラーにしない。ここまでに流した分で成立させる
+        } finally {
+          controller.close();
+        }
+      },
+      cancel() {
+        stream.abort();
+      },
+    });
 
-    if (text.trim() === "") return fallback("応答が空");
-
-    // パースと検証はクライアント側の検証層（src/lib/aiResponse.ts）が行う。
-    // ここでは素通しする（Route Handler にロジックを持たせない）。
-    return Response.json({ ok: true, data: text } satisfies RouteResult);
+    return new Response(body, {
+      status: 200,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        // 中間プロキシに溜め込ませない
+        "cache-control": "no-store, no-transform",
+      },
+    });
   } catch (e) {
     const reason = e instanceof Error ? e.message : "AI呼び出しに失敗";
     return fallback(reason);

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   applyAiResponseToCards,
   validateAiResponse,
+  validateStreamedCard,
   type ValidationContext,
 } from "@/lib/aiResponse";
 import { CAUSE_LABEL } from "@/lib/diagnosis";
@@ -130,15 +131,16 @@ describe("validateAiResponse", () => {
     if (r.ok) expect(r.response.suggested_tempo).toBe("none");
   });
 
-  it("V6：6枚返ってきたら5枚に切る", () => {
-    // なぜ：maxItems が使えないためアプリ側で担保する（spec.md §10-10）
+  it("★V6 撤廃：6枚返ってきたら6枚とも通す（2026-08-18・§10-10）", () => {
+    // 上限で切ると、切られた語に説明が付かないまま残る。
+    // 幻覚は V2（id の検査）で防ぐので、枚数で防ぐ必要はない
     const ids = [10, 11, 12, 13, 14, 15];
     const r = validateAiResponse(
       response({ review_cards: ids.map((id) => aiCard(id)) }),
       ctx(ids),
     );
     expect(r.ok).toBe(true);
-    if (r.ok) expect(r.response.review_cards).toHaveLength(5);
+    if (r.ok) expect(r.response.review_cards).toHaveLength(6);
   });
 
   it("★6枚目に不正な id があれば、切る前に全体エラーになる（V2 → slice の順）", () => {
@@ -196,5 +198,33 @@ describe("applyAiResponseToCards", () => {
     );
     expect(Object.keys(out)).toHaveLength(1);
     expect(out[idKey(99)]).toBeUndefined();
+  });
+});
+
+/**
+ * ★ストリーミング中の1枚単位の検証（2026-08-18・§10-5）。
+ *   全件そろう前に表示するので、V2（幻覚）と V5（文字数）を**1枚ずつ**適用する。
+ *   最終的な全体検証（V1〜V5）は完了時に別途走り、そちらが正典。
+ */
+describe("validateStreamedCard", () => {
+  it("出題した id なら通る", () => {
+    const card = validateStreamedCard(aiCard(10), ctx([10, 11]));
+    expect(card?.id).toBe(10);
+  });
+
+  it("★出題していない id は捨てる（幻覚を1枚単位でも防ぐ）", () => {
+    expect(validateStreamedCard(aiCard(999), ctx([10, 11]))).toBeNull();
+  });
+
+  it("形が不正なら捨てる", () => {
+    expect(validateStreamedCard({ id: 10 }, ctx([10]))).toBeNull();
+    expect(validateStreamedCard(null, ctx([10]))).toBeNull();
+    expect(validateStreamedCard("x", ctx([10]))).toBeNull();
+  });
+
+  it("文字数の上限で切る（V5）", () => {
+    const long = { ...aiCard(10), explanation: "あ".repeat(400) };
+    const card = validateStreamedCard(long, ctx([10]));
+    expect(card?.explanation).toHaveLength(300);
   });
 });

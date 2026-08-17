@@ -28,19 +28,26 @@ import { ChoiceButton, choiceStateOf } from "@/components/ChoiceButton";
 import { Dock, DockButton } from "@/components/Dock";
 import { ResultView } from "@/components/ResultView";
 import { ScoreStrip } from "@/components/ScoreStrip";
-import { validateAiResponse, applyAiResponseToCards } from "@/lib/aiResponse";
+import {
+  applyAiResponseToCards,
+  validateAiResponse,
+  validateStreamedCard,
+} from "@/lib/aiResponse";
 import { diagnose } from "@/lib/diagnosis";
 import { buildFeedbackRequest } from "@/lib/feedbackRequest";
 import { restoreScoreMarks, toScoreMarks } from "@/lib/marks";
 import { applySessionToCards } from "@/lib/reviewCards";
 import { buildSession, summarize } from "@/lib/session";
 import { buildSessionRecord, markSessionAiReady } from "@/lib/sessionRecord";
+import { extractPartial } from "@/lib/streamingCards";
 import { isNoAnswer, tempoLabel } from "@/lib/tempo";
 import type {
   AnsweredQuestion,
   CardMap,
   FeedbackRequest,
+  FeedbackResponse,
   Question,
+  ReviewCard,
   SessionRecord,
   TempoId,
 } from "@/lib/types";
@@ -65,6 +72,24 @@ const WORDLIST = loadWordlist();
 
 const TEMPOS: readonly TempoId[] = ["slow", "normal", "fast"];
 
+/**
+ * ストリーミング中の部分適用に使う空の応答。
+ * `applyAiResponseToCards` は review_cards しか見ないので、他は使われない。
+ */
+const EMPTY_RESPONSE: FeedbackResponse = {
+  pattern_summary: "",
+  review_cards: [],
+  next_message: "",
+  suggested_tempo: "none",
+};
+
+const AI_EMPTY: AiState = {
+  phase: "waiting",
+  patternSummary: null,
+  cards: [],
+  nextMessage: null,
+};
+
 type Phase = "home" | "quiz" | "result";
 
 export function QuizRoot() {
@@ -80,7 +105,7 @@ export function QuizRoot() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<AnsweredQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [ai, setAi] = useState<AiState>({ status: "waiting" });
+  const [ai, setAi] = useState<AiState>(AI_EMPTY);
 
   /** そのセッション中に固定するテンポ。途中で設定が変わっても採点がぶれない */
   const [sessionTempo, setSessionTempo] = useState<TempoId>(
@@ -121,7 +146,7 @@ export function QuizRoot() {
     setQuestions(built);
     setAnswers([]);
     setCurrentIndex(0);
-    setAi({ status: "waiting" });
+    setAi(AI_EMPTY);
     setSessionTempo(persisted.settings.tempo);
     questionStartedAt.current = monotonicNow();
     setPhase("quiz");
@@ -211,7 +236,7 @@ export function QuizRoot() {
     setQuestions([]);
     setAnswers([]);
     setCurrentIndex(0);
-    setAi({ status: "waiting" });
+    setAi(AI_EMPTY);
     questionStartedAt.current = null;
     setPhase("home");
   }, []);
@@ -237,21 +262,11 @@ export function QuizRoot() {
     async function requestFeedback(signal: AbortSignal) {
       const req = pendingRequest.current;
       if (req === null) {
-        setAi({ status: "failed" });
+        setAi({ ...AI_EMPTY, phase: "failed" });
         return;
       }
 
-      const res = await fetchFeedback(req, signal);
-      if (signal.aborted) return;
-
-      // ★失敗の理由を画面で出し分けない（§12-7）。ログにだけ残す
-      if (!res.ok) {
-        console.warn("[feedback] 取得できず:", res.reason);
-        setAi({ status: "failed" });
-        return;
-      }
-
-      const validated = validateAiResponse(res.raw, {
+      const vctx = {
         presentedIds: [
           ...req.results.map((r) => r.id),
           ...req.pending.map((p) => p.id),
@@ -260,14 +275,65 @@ export function QuizRoot() {
         currentTempo: sessionTempo,
         accuracyRate: req.session.accuracyRate,
         instantRate: req.session.instantRate,
-      });
+      };
 
+      /**
+       * ★届いた分をその場で確定させる（§12-6 d）。
+       *   1枚検証を通ったカードだけを localStorage に書き、画面にも出す。
+       *   ここで書いておくので、途中で切れても消えない。
+       */
+      const writtenIds = new Set<number>();
+      const onProgress = (snapshot: string) => {
+        if (signal.aborted) return;
+        const partial = extractPartial(snapshot);
+
+        const fresh = partial.cards
+          .map((c) => validateStreamedCard(c, vctx))
+          .filter((c): c is NonNullable<typeof c> => c !== null)
+          .filter((c) => !writtenIds.has(c.id));
+
+        if (fresh.length === 0 && partial.patternSummary === null) return;
+
+        let arrived: ReviewCard[] = [];
+        if (fresh.length > 0) {
+          const at = now();
+          const latest = getPersistedSnapshot();
+          const nextCards = applyAiResponseToCards(
+            latest.cards,
+            { ...EMPTY_RESPONSE, review_cards: fresh },
+            at,
+          );
+          for (const c of fresh) writtenIds.add(c.id);
+          writePersisted({ cards: nextCards });
+          arrived = pickArrivedCards(nextCards, fresh);
+        }
+
+        setAi((prev) => ({
+          phase: "streaming",
+          patternSummary: partial.patternSummary ?? prev.patternSummary,
+          cards: [...prev.cards, ...arrived],
+          nextMessage: prev.nextMessage,
+        }));
+      };
+
+      const res = await fetchFeedback(req, signal, onProgress);
       if (signal.aborted) return;
 
-      // ★検証落ちも「取れなかった」と同じ扱い。カードは pending のまま残る
+      // ★失敗の理由を画面で出し分けない（§12-7）。ログにだけ残す。
+      //   ここまでに届いた分は onProgress が保存済みなので消さない
+      if (!res.ok) {
+        console.warn("[feedback] 取得できず:", res.reason);
+        setAi((prev) => ({ ...prev, phase: "failed" }));
+        return;
+      }
+
+      // 完了時に全体を検証する。こちらが正典（§10-5）
+      const validated = validateAiResponse(res.raw, vctx);
+      if (signal.aborted) return;
+
       if (!validated.ok) {
         console.warn("[feedback] 検証に失敗:", validated.reason);
-        setAi({ status: "failed" });
+        setAi((prev) => ({ ...prev, phase: "failed" }));
         return;
       }
 
@@ -285,9 +351,10 @@ export function QuizRoot() {
       });
 
       setAi({
-        status: "ready",
-        response: validated.response,
+        phase: "done",
+        patternSummary: validated.response.pattern_summary,
         cards: pickArrivedCards(nextCards, validated.response.review_cards),
+        nextMessage: validated.response.next_message,
       });
     }
     // answers / persisted は sessionSeq が変わる瞬間の値で確定しているので依存に入れない。
@@ -354,7 +421,7 @@ export function QuizRoot() {
 function pickArrivedCards(
   cards: CardMap,
   arrived: readonly { id: number }[],
-): CardMap[string][] {
+): ReviewCard[] {
   return arrived
     .map((a) => cards[String(a.id)])
     .filter((c): c is CardMap[string] => c !== undefined);

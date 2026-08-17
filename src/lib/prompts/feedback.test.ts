@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildFeedbackPrompt,
-  MAX_REVIEW_CARDS,
-  selectCardTargets,
-} from "@/lib/prompts/feedback";
+import { buildFeedbackPrompt, selectCardTargets } from "@/lib/prompts/feedback";
 import type { Cause, FeedbackRequest, Level } from "@/lib/types";
 
 /**
@@ -97,48 +93,61 @@ describe("selectCardTargets", () => {
     expect(targets.map((t) => t.source)).toEqual(["wrong", "hesitant", "pending"]);
   });
 
-  it("★今回の対象が5件あるとき、pending は1件も入らない", () => {
-    // これが変更の目的。今回作られたカードに必ず説明が入る
+  it("★今回の語が pending より必ず先に並ぶ", () => {
+    // これが優先順位反転の目的。ストリーミングでは先に届いた順に表示されるため、
+    // 「いま解いた語の説明が先に出る」ことがそのまま体験になる
     const targets = selectCardTargets(
       req({
         results: [10, 11, 12, 13, 14].map((id) => wrong(id)),
         pending: [1, 2, 3, 4, 5].map((id) => pendingItem(id)),
       }),
     );
-    expect(targets.map((t) => t.id)).toEqual([10, 11, 12, 13, 14]);
-    expect(targets.every((t) => t.source === "wrong")).toBe(true);
+    expect(targets.slice(0, 5).map((t) => t.id)).toEqual([10, 11, 12, 13, 14]);
+    expect(targets.slice(5).every((t) => t.source === "pending")).toBe(true);
   });
 
-  it("今回の対象が5件未満なら、余った枠に pending が入る", () => {
+  it("重複する id は1件にまとめる", () => {
+    // 今回まちがえた語が pending にも居るとき、2回渡さない
     const targets = selectCardTargets(
-      req({
-        results: [wrong(10), hesitant(20)],
-        pending: [1, 2, 3, 4, 5].map((id) => pendingItem(id)),
-      }),
+      req({ results: [wrong(1)], pending: [pendingItem(1), pendingItem(2)] }),
     );
-    expect(targets.map((t) => t.id)).toEqual([10, 20, 1, 2, 3]);
+    expect(targets.map((t) => t.id)).toEqual([1, 2]);
+    expect(targets[0]?.source).toBe("wrong");
   });
 
-  it("上限5件。6件以上の候補があっても5件に絞る", () => {
-    // なぜ：15枚生成はレイテンシが読めず analyzing 待機が長くなる（spec.md §10-10）
+  /**
+   * ★2026-08-18 に上限を撤廃した（spec.md §10-10）。
+   *   5枚で切ると、今回まちがえた語の一部に必ず説明が入らない。
+   *   待ち時間はストリーミング（§12-6 d）で解いたので、枚数を絞る理由がなくなった。
+   */
+  it("上限を設けない。候補が7件あれば7件返す", () => {
     const targets = selectCardTargets(
       req({ results: [10, 11, 12, 13, 14, 15, 16].map((id) => wrong(id)) }),
     );
-    expect(targets).toHaveLength(MAX_REVIEW_CARDS);
-    expect(MAX_REVIEW_CARDS).toBe(5);
+    expect(targets).toHaveLength(7);
   });
 
-  it("★古い pending は、今回の対象が多いと押し出される（既知の代償）", () => {
-    // spec.md §10-10。毎回5件以上まちがえ続けると古い pending は埋まらない。
-    // 実装では対処しない。手で消す導線（§12-8）がその受け皿
+  it("今回の対象と pending を合わせて全件返す", () => {
+    const targets = selectCardTargets(
+      req({
+        results: [10, 11, 12, 13, 14, 15].map((id) => wrong(id)),
+        pending: [1, 2, 3, 4, 5].map((id) => pendingItem(id)),
+      }),
+    );
+    expect(targets).toHaveLength(11);
+    expect(targets.filter((t) => t.source === "pending")).toHaveLength(5);
+  });
+
+  it("★古い pending も押し出されない（上限撤廃の帰結）", () => {
+    // 2026-08-18 以前は5枚上限で pending が落ちていた。いまは全件渡す
     const targets = selectCardTargets(
       req({
         results: [10, 11, 12, 13, 14, 15].map((id) => wrong(id)),
         pending: [1, 2, 3].map((id) => pendingItem(id)),
       }),
     );
-    expect(targets).toHaveLength(5);
-    expect(targets.some((t) => t.source === "pending")).toBe(false);
+    expect(targets).toHaveLength(9);
+    expect(targets.filter((t) => t.source === "pending").map((t) => t.id)).toEqual([1, 2, 3]);
   });
 
   it("即答で正解した語は対象に入らない（cause が null）", () => {
@@ -280,12 +289,10 @@ describe("buildFeedbackPrompt", () => {
     expect(p).toContain("場面10");
   });
 
-  it("「最大5枚」の指示が含まれる", () => {
-    // なぜ：maxItems が使えないため、プロンプト本文が枚数制御の一方の担保
-    //       （spec.md §10-10。もう一方は aiResponse の slice）
+  it("対象の件数を伝え、それ以外を返さないよう指示する", () => {
+    // 上限は撤廃したが「渡した語だけを返す」制約は残る（幻覚の抑止・§10-5 V2）
     const p = buildFeedbackPrompt(sample());
-    expect(p).toContain("5");
-    expect(p).toMatch(/最大|以内|超えない/);
+    expect(p).toContain("ここに無い語を返してはいけません");
   });
 
   it("★渡さないものが含まれない（日付・履歴・localStorage）", () => {
