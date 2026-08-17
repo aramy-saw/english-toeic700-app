@@ -17,7 +17,17 @@ import { useState } from "react";
 import { causeLabel } from "@/lib/diagnosis";
 import type { ReviewCard as Card } from "@/lib/types";
 
-export function ReviewCardView({ card }: { card: Card }) {
+export function ReviewCardView({
+  card,
+  onDelete,
+}: {
+  card: Card;
+  /**
+   * 渡さなければ削除操作を出さない。
+   * 結果画面のカードには渡さない（消せるのは `/review` だけ・§12-8）。
+   */
+  onDelete?: () => void;
+}) {
   const [showJa, setShowJa] = useState(false);
   const content = card.content;
 
@@ -79,6 +89,26 @@ export function ReviewCardView({ card }: { card: Card }) {
               </button>
             )}
           </div>
+        </div>
+      )}
+
+      {/*
+       * ★削除（§12-8・2026-08-18 追加）。
+       *   確認ダイアログを出さない。また間違えればカードは作り直されるので、
+       *   取り返しがつく操作である。ダイアログは「重い操作だ」という誤った予告になる。
+       *
+       * ★見た目は「和訳を見る」と同じ枠付きボタンの語彙。
+       *   差し色（--ok / --attn）を使わない。削除は警告ではなく、ただの片付け。
+       */}
+      {onDelete !== undefined && (
+        <div className="mt-[var(--s4)] border-t border-line pt-[var(--s3)]">
+          <button
+            type="button"
+            onClick={onDelete}
+            className="min-h-[44px] rounded-r2 border border-line px-[var(--s3)] text-[16px] text-text-mute transition-colors duration-[120ms] active:bg-surface"
+          >
+            このカードを消す
+          </button>
         </div>
       )}
     </article>

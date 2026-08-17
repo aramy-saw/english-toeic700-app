@@ -3,6 +3,7 @@ import { idKey } from "@/lib/ids";
 import {
   applySessionToCards,
   MAX_PENDING_PER_CALL,
+  removeCard,
   selectPendingForCall,
 } from "@/lib/reviewCards";
 import type {
@@ -166,5 +167,85 @@ describe("selectPendingForCall", () => {
     const picked = selectPendingForCall(cards);
     expect(picked).toHaveLength(MAX_PENDING_PER_CALL);
     expect(picked.map((c) => c.id)).toEqual([1, 2, 3, 4, 5]);
+  });
+});
+
+/**
+ * ★手で消す導線を追加した（2026-08-18）。当初は「読むだけ」だった。
+ *   docs/spec.md §12-8 / docs/decisions.md 参照。
+ *
+ * 消すのは**カードだけ**。wordStats も出題対象も触らない。
+ * また間違えれば applySessionToCards がカードを作り直す。
+ */
+describe("removeCard", () => {
+  const card = (id: number, over: Partial<ReviewCard> = {}): ReviewCard => ({
+    id,
+    word: `w${id}`,
+    meaning: `m${id}`,
+    level: 2,
+    cause: "weak_memory",
+    state: "pending",
+    missCount: 1,
+    hesitantCount: 0,
+    createdAt: id,
+    updatedAt: id,
+    content: null,
+    ...over,
+  });
+
+  const map = (...ids: number[]): CardMap =>
+    Object.fromEntries(ids.map((id) => [String(id), card(id)]));
+
+  it("指定した id のカードだけを消す", () => {
+    const out = removeCard(map(1, 2, 3), 2);
+
+    expect(Object.keys(out).sort()).toEqual(["1", "3"]);
+  });
+
+  it("入力の CardMap を変更しない（純関数）", () => {
+    const cards = map(1, 2);
+    removeCard(cards, 1);
+
+    expect(Object.keys(cards).sort()).toEqual(["1", "2"]);
+  });
+
+  it("存在しない id を渡しても落ちず、内容も変わらない", () => {
+    const out = removeCard(map(1, 2), 999);
+
+    expect(Object.keys(out).sort()).toEqual(["1", "2"]);
+  });
+
+  it("最後の1枚を消すと空になる", () => {
+    expect(removeCard(map(7), 7)).toEqual({});
+  });
+
+  it("★word ではなく id で消す（word 重複26語があるため）", () => {
+    // 同じ word を持つ別の語を消してしまわないこと（CLAUDE.md 配布データの注意）
+    const cards: CardMap = {
+      "121": card(121, { word: "overhead", meaning: "経費・間接費" }),
+      "287": card(287, { word: "overhead", meaning: "頭上の・上空の" }),
+    };
+    const out = removeCard(cards, 121);
+
+    expect(Object.keys(out)).toEqual(["287"]);
+    expect(out["287"]?.word).toBe("overhead");
+  });
+
+  it("ready のカードも消せる（説明が付いていても消せる）", () => {
+    const cards: CardMap = {
+      "5": card(5, {
+        state: "ready",
+        content: {
+          causeLabel: "意味の記憶があいまい",
+          explanation: "x",
+          usageNote: "y",
+          exampleEn: "z",
+          exampleJa: "w",
+          filledAt: 1,
+        },
+      }),
+    };
+
+    expect(removeCard(cards, 5)).toEqual({});
   });
 });

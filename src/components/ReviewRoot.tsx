@@ -3,8 +3,11 @@
 /**
  * 復習カード一覧（docs/spec.md §13-7 c）。
  *
- * ★読むだけ。 削除・編集・タップ操作を作らない（step6.md §3 判断1・§13-1「静かな道具」）。
- *   カードが消えるのは「即答で正解して卒業したとき」だけ。手で消す導線は置かない。
+ * ★消す以外の操作は作らない（§13-1「静かな道具」）。編集もタップでの出題も無い。
+ *   当初は「読むだけ」だったが、**枚数が増え続けると一覧として機能しなくなる**ため、
+ *   1枚ずつ消す導線だけを足した（§12-8・2026-08-18）。
+ *
+ * ★消すのはカードだけ。 出題対象からは外さない。また間違えれば作り直される。
  *
  * ★並びは updatedAt の新しい順。 直近で間違えた語が上に来る。
  */
@@ -13,11 +16,13 @@ import { useSyncExternalStore } from "react";
 
 import { AppBar } from "@/components/AppBar";
 import { ReviewCardView } from "@/components/ReviewCard";
+import { removeCard } from "@/lib/reviewCards";
 import {
   getPersistedSnapshot,
   getServerPersistedSnapshot,
   isBootSnapshot,
   subscribePersisted,
+  writePersisted,
 } from "@/platform/persisted";
 
 export function ReviewRoot() {
@@ -57,7 +62,21 @@ export function ReviewRoot() {
             {cards.length > 0 && (
               <div className="flex flex-col gap-[var(--s3)]">
                 {cards.map((card) => (
-                  <ReviewCardView key={card.id} card={card} />
+                  <ReviewCardView
+                    key={card.id}
+                    card={card}
+                    /*
+                     * ★書き込み口は writePersisted 1つ（persisted.ts）。
+                     *   localStorage と React の両方が同時に更新されるので、
+                     *   枚数の表示（「7枚」）も同じ描画で更新される。
+                     *   件数を別に持っていないので、ズレようがない。
+                     */
+                    onDelete={() =>
+                      writePersisted({
+                        cards: removeCard(getPersistedSnapshot().cards, card.id),
+                      })
+                    }
+                  />
                 ))}
               </div>
             )}

@@ -11,7 +11,7 @@
  * ここは CardMap を受け取って新しい CardMap を返す純関数にする。
  */
 import { idKey } from "./ids";
-import type { AnsweredQuestion, CardMap, Cause, ReviewCard } from "./types";
+import type { AnsweredQuestion, CardMap, Cause, ReviewCard, WordId } from "./types";
 
 /** 1回のAI呼び出しで渡す pending の上限 */
 export const MAX_PENDING_PER_CALL = 5;
@@ -79,6 +79,22 @@ export function applySessionToCards(
         : updateCard(prev, a.cause, now);
   }
 
+  return out;
+}
+
+/**
+ * カードを1枚消す（docs/spec.md §12-8・2026-08-18 追加）。
+ *
+ * ★消すのはカードだけ。 `wordStats` にも出題対象にも触らない。
+ *   また間違えれば applySessionToCards がカードを作り直す。
+ *   だから確認ダイアログを出さない（取り返しがつく操作）。
+ *
+ * ★キーは word ではなく id。 word 重複が26語あるため、
+ *   overhead(121「経費」) を消すつもりで overhead(287「頭上の」) を消してはいけない。
+ */
+export function removeCard(cards: CardMap, id: WordId): CardMap {
+  const out: CardMap = { ...cards };
+  delete out[idKey(id)];
   return out;
 }
 
