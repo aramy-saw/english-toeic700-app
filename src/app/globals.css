@@ -114,3 +114,39 @@ body {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
+
+/**
+ * 復習カードの到着（§12-6 e・§13-10 a）。
+ * opacity 0→1 ＋ translateY 6px→0 ／ 240ms ／ ease-out。
+ * 遅延は AiSlot が animation-delay で 0.1 秒間隔に付ける。
+ *
+ * ★動かすものは2つだけ（§13-10 a）。これはそのうちの1つ。
+ *   もう1つは選択肢押下の背景色 120ms。それ以外に遷移を足さない。
+ *
+ * ★backwards を指定しないと、delay 中に不透明のまま見えてから
+ *   一瞬消える。1枚ずつ現れる演出が壊れるので必須。
+ */
+.card-arrive {
+  animation: card-arrive 240ms ease-out backwards;
+}
+
+@keyframes card-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/**
+ * ★動きを減らす設定のときは、遅延も移動も不透明度の遷移も無くす（§13-10）。
+ *   「薄くしてから出す」も動きなので、カードは即座に不透明で表示する。
+ */
+@media (prefers-reduced-motion: reduce) {
+  .card-arrive {
+    animation: none;
+  }
+}

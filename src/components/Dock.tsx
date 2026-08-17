@@ -20,7 +20,14 @@
  */
 import type { ReactNode } from "react";
 
-export function Dock({ children }: { children: ReactNode }) {
+export function Dock({
+  children,
+  below,
+}: {
+  children: ReactNode;
+  /** 主ボタンの下に置く控えめな操作（「ホームへ」など）。無ければ場所も取らない */
+  below?: ReactNode;
+}) {
   return (
     <div
       className="border-t border-line bg-bg"
@@ -33,6 +40,7 @@ export function Dock({ children }: { children: ReactNode }) {
         <div className="flex h-[52px] items-center">
           <div className="w-full">{children}</div>
         </div>
+        {below !== undefined && <div className="mt-[var(--s2)]">{below}</div>}
       </div>
     </div>
   );

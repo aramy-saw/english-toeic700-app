@@ -142,8 +142,34 @@ describe("buildFeedbackPrompt", () => {
   it("causeCounts が含まれる（AIに数えさせない）", () => {
     // なぜ：spec.md §10-2。数え間違いは pattern_summary の説得力を直撃する
     const p = buildFeedbackPrompt(sample());
-    expect(p).toContain("pos_mismatch");
-    expect(p).toContain("3"); // causeCounts.pos_mismatch
+    expect(p).toContain("品詞の取り違え: 3件");
+    expect(p).toContain("意味の記憶があいまい: 1件");
+    expect(p).toContain("思い出すのに時間がかかった: 2件");
+  });
+
+  /**
+   * ★2026-08-17 実機で pattern_summary に「（hesitant）」が出た。
+   *   原因は formatTarget と内訳が cause の内部値をそのまま渡していたこと。
+   *   日本語ラベルで渡すのが本修正で、禁止事項の明示は二重の歯止め。
+   *
+   * ここで「プロンプト全体に内部値が無い」とは検査できない。
+   * 禁止事項の文中に対象の文字列そのものを書いているため。
+   * だからデータを渡している箇所を名指しで検査する。
+   */
+  it("cause を内部値のまま渡さない（日本語ラベルで渡す）", () => {
+    const p = buildFeedbackPrompt(sample());
+
+    expect(p).toContain("確定した原因: 品詞の取り違え");
+    expect(p).not.toContain("確定した原因: pos_mismatch");
+    expect(p).not.toContain("確定した原因: weak_memory");
+    expect(p).not.toContain("確定した原因: hesitant");
+    // 内訳の行に内部値を併記しない
+    expect(p).not.toContain("pos_mismatch（品詞の取り違え）");
+  });
+
+  it("内部値を出力に含めるなという指示がある", () => {
+    const p = buildFeedbackPrompt(sample());
+    expect(p).toContain("出力に含めない");
   });
 
   it("対象語の similar が含まれる", () => {

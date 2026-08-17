@@ -7,32 +7,55 @@
  *   page.tsx に付けると `/` 全体がクライアント境界になり、
  *   boot（SSR と同一の静的スケルトン）が作れなくなる。
  *
- * ★STEP 6 段階3 の範囲は boot / home / quiz。
- *   - home は「はじめる」だけの仮置き。前回SCORE・テンポ3択・/review は段階5
- *   - analyzing / result は段階4。ここでは通し終えたことが分かる最小表示だけ
- *   - localStorage への確定書き込みも段階4（§12-2 は quiz→analyzing で書くと定める）
+ * ★`analyzing` を独立した phase として持たない（§12-2・2026-08-17 確定）。
+ *   `ai.status === "waiting"` が analyzing、`"ready"` / `"failed"` が result。
+ *   同じ事実を2箇所に持つと必ずズレる。
  */
 
-import { useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
+import Link from "next/link";
 
+import type { AiState } from "@/components/AiSlot";
 import { AppBar } from "@/components/AppBar";
 import { ChoiceButton, choiceStateOf } from "@/components/ChoiceButton";
 import { Dock, DockButton } from "@/components/Dock";
+import { ResultView } from "@/components/ResultView";
 import { ScoreStrip } from "@/components/ScoreStrip";
+import { validateAiResponse, applyAiResponseToCards } from "@/lib/aiResponse";
 import { diagnose } from "@/lib/diagnosis";
-import { toScoreMarks } from "@/lib/marks";
+import { buildFeedbackRequest } from "@/lib/feedbackRequest";
+import { restoreScoreMarks, toScoreMarks } from "@/lib/marks";
+import { applySessionToCards } from "@/lib/reviewCards";
 import { buildSession, summarize } from "@/lib/session";
-import { isNoAnswer } from "@/lib/tempo";
-import type { AnsweredQuestion, Question, Settings } from "@/lib/types";
+import { buildSessionRecord, markSessionAiReady } from "@/lib/sessionRecord";
+import { isNoAnswer, tempoLabel } from "@/lib/tempo";
+import type {
+  AnsweredQuestion,
+  CardMap,
+  FeedbackRequest,
+  Question,
+  SessionRecord,
+  TempoId,
+} from "@/lib/types";
+import { applySessionToWordStats } from "@/lib/wordStats";
 import { loadWordlist } from "@/lib/wordlist";
-import { monotonicNow } from "@/platform/clock";
-import { rng } from "@/platform/rng";
+import { monotonicNow, now, todayJst } from "@/platform/clock";
+import { fetchFeedback } from "@/platform/feedbackClient";
 import {
-  DEFAULT_SETTINGS,
-  readCards,
-  readSettings,
-  readWordStats,
-} from "@/platform/storage";
+  getPersistedSnapshot,
+  getServerPersistedSnapshot,
+  isBootSnapshot,
+  subscribePersisted,
+  writePersisted,
+} from "@/platform/persisted";
+import { rng } from "@/platform/rng";
 
 /**
  * 配布300語の正規化はモジュール評価時に1回だけ。
@@ -40,63 +63,66 @@ import {
  */
 const WORDLIST = loadWordlist();
 
-/**
- * ★§12-2 の `boot` が無い。
- *   boot は「localStorage 由来の値を描く前に SSR と同じ静的スケルトンを見せる」ための
- *   状態だが、段階3 の home はまだ保存値を1つも描かないので出番が無く、
- *   置いても常に素通りする空の状態にしかならない。
- *   home に前回SCORE を出す段階5 で、boot ごと useSyncExternalStore で入れる。
- */
-type Phase = "home" | "quiz" | "analyzing";
+const TEMPOS: readonly TempoId[] = ["slow", "normal", "fast"];
+
+type Phase = "home" | "quiz" | "result";
 
 export function QuizRoot() {
+  const persisted = useSyncExternalStore(
+    subscribePersisted,
+    getPersistedSnapshot,
+    getServerPersistedSnapshot,
+  );
+
   const [phase, setPhase] = useState<Phase>("home");
 
-  // §12-5「捨てる（React state）」に対応する。もう1セットでここだけ初期化する
+  // §12-5「捨てる（React state）」。もう1セットでここだけ初期化する
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<AnsweredQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [ai, setAi] = useState<AiState>({ status: "waiting" });
+
+  /** そのセッション中に固定するテンポ。途中で設定が変わっても採点がぶれない */
+  const [sessionTempo, setSessionTempo] = useState<TempoId>(
+    persisted.settings.tempo,
+  );
+
+  /** セッションの通し番号。AI 呼び出しの二重送信ガードに使う */
+  const [sessionSeq, setSessionSeq] = useState(0);
+  const sentSeq = useRef<number | null>(null);
 
   /**
-   * §12-5「保持する（React state）」。localStorage のインメモリミラー。
+   * AI に送るリクエスト。**セッション確定の時点で作って固める。**
    *
-   * ★読み込みは「はじめる」のハンドラ内で行う（下の startSession）。
-   *   マウント時の useEffect で読むと `react-hooks/set-state-in-effect` に触れる。
-   *   段階3 の home は localStorage 由来の値を1つも描かないので、
-   *   描画前に読む必要が無く、ハンドラで読めば十分。
+   * ★cards を書き込む前に作るのが要点（§10-2・§10-10）。
+   *   applySessionToCards の後に作ると、今回できたばかりのカードまで
+   *   `pending`＝「前回までに説明を作れなかった語」として渡ることになり、
+   *   AI に渡す区分が実態とズレる。
    */
-  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
-  // cards / wordStats はミラーを持たず、セッション開始時に読むだけ。
-  // 書き戻し（applySessionToCards）が入る段階4 で state に載せる
+  const pendingRequest = useRef<FeedbackRequest | null>(null);
 
   /**
    * 出題を表示した時刻（monotonicNow）。
-   * ★描画に使わない値なので state ではなく ref。state にすると回答のたびに
-   *   無駄な再描画が1回増える。
+   * ★描画に使わない値なので state ではなく ref。
    */
   const questionStartedAt = useRef<number | null>(null);
 
-  /**
-   * ★シャッフルはイベントハンドラ内（§12-3）。StrictMode の二重実行を避ける。
-   *
-   * localStorage もここで読む。read* はクライアントでしか呼ばれないので
-   * サーバー側で「今日」や保存値を触ることが構造的に起きない（§12-4）。
-   */
+  /** ★シャッフルはイベントハンドラ内（§12-3）。StrictMode の二重実行を避ける */
   function startSession() {
-    const loadedSettings = readSettings();
-    const loadedCards = readCards();
-    const loadedWordStats = readWordStats();
-
-    setSettings(loadedSettings);
-
     const built = buildSession(
-      { wordlist: WORDLIST, cards: loadedCards, wordStats: loadedWordStats },
+      {
+        wordlist: WORDLIST,
+        cards: persisted.cards,
+        wordStats: persisted.wordStats,
+      },
       rng,
     );
 
     setQuestions(built);
     setAnswers([]);
     setCurrentIndex(0);
+    setAi({ status: "waiting" });
+    setSessionTempo(persisted.settings.tempo);
     questionStartedAt.current = monotonicNow();
     setPhase("quiz");
   }
@@ -106,14 +132,12 @@ export function QuizRoot() {
    * choiceId === null が「わからない」。
    *
    * ★経過時間が NO_ANSWER_TIMEOUT_MS を超えていたら無回答に倒す（§7-1）。
-   *   タイマーで自動的に進めることはしない。通勤中に画面を伏せた人の問題を
-   *   勝手に閉じないため、判定は回答したこの瞬間にだけ行う。
+   *   タイマーで自動的に進めることはしない。
    */
   function answer(choiceId: string | null) {
     const question = questions[currentIndex];
     if (question === undefined) return;
-    // 二重回答の防止。回答済みなら選択肢は disabled だが、状態側でも閉じておく
-    if (answers.length > currentIndex) return;
+    if (answers.length > currentIndex) return; // 二重回答の防止
 
     const startedAt = questionStartedAt.current;
     const elapsed =
@@ -128,7 +152,7 @@ export function QuizRoot() {
       question,
       selectedChoiceId,
       responseMs,
-      tempo: settings.tempo,
+      tempo: sessionTempo,
     });
 
     setAnswers((prev) => [
@@ -137,10 +161,45 @@ export function QuizRoot() {
     ]);
   }
 
+  /**
+   * セッションの確定書き込み（§12-2 の quiz→analyzing）。
+   * ★AI を待たない。 28秒のあいだにアプリを閉じても記録は残る。
+   */
+  function finishSession(finalAnswers: readonly AnsweredQuestion[]) {
+    const at = now();
+
+    // ★書き込みより先に組み立てる（pendingRequest のコメント参照）
+    pendingRequest.current = buildFeedbackRequest({
+      answers: finalAnswers,
+      tempo: sessionTempo,
+      cards: persisted.cards,
+      wordlist: WORDLIST,
+    });
+
+    const record = buildSessionRecord({
+      answers: finalAnswers,
+      tempo: sessionTempo,
+      finishedAt: at,
+      dateLabel: todayJst(at), // ★クライアントで JST 算出（§12-4）
+    });
+
+    writePersisted({
+      cards: applySessionToCards(persisted.cards, finalAnswers, at),
+      wordStats: applySessionToWordStats(
+        persisted.wordStats,
+        finalAnswers,
+        at,
+      ),
+      // 新しい順。writeSessions が 50件に切り詰める
+      sessions: [record, ...persisted.sessions],
+    });
+  }
+
   function goNext() {
     if (currentIndex + 1 >= questions.length) {
-      // 段階4 でここに localStorage への確定書き込みと AI 呼び出しが入る
-      setPhase("analyzing");
+      finishSession(answers);
+      setSessionSeq((n) => n + 1);
+      setPhase("result");
       return;
     }
     setCurrentIndex((i) => i + 1);
@@ -148,17 +207,135 @@ export function QuizRoot() {
   }
 
   /** 中断。★何も保存しない（§12-2） */
-  function quitToHome() {
+  const quitToHome = useCallback(() => {
     setQuestions([]);
     setAnswers([]);
     setCurrentIndex(0);
+    setAi({ status: "waiting" });
     questionStartedAt.current = null;
     setPhase("home");
+  }, []);
+
+  /**
+   * AI 呼び出し（§12-3 が useEffect を明示的に許可している唯一の箇所）。
+   *
+   * ★sentSeq で二重送信を防ぐ。 StrictMode の2回実行対策であり、
+   *   そのまま API コストの対策でもある。
+   *
+   * ★クリーンアップで abort する。 「もう1セット」やホームへ戻る操作で
+   *   応答は破棄する（§12-6 c・2026-08-17 確定）。裏で生かさない。
+   */
+  useEffect(() => {
+    if (phase !== "result" || sessionSeq === 0) return;
+    if (sentSeq.current === sessionSeq) return;
+    sentSeq.current = sessionSeq;
+
+    const ac = new AbortController();
+    void requestFeedback(ac.signal);
+    return () => ac.abort();
+
+    async function requestFeedback(signal: AbortSignal) {
+      const req = pendingRequest.current;
+      if (req === null) {
+        setAi({ status: "failed" });
+        return;
+      }
+
+      const res = await fetchFeedback(req, signal);
+      if (signal.aborted) return;
+
+      // ★失敗の理由を画面で出し分けない（§12-7）。ログにだけ残す
+      if (!res.ok) {
+        console.warn("[feedback] 取得できず:", res.reason);
+        setAi({ status: "failed" });
+        return;
+      }
+
+      const validated = validateAiResponse(res.raw, {
+        presentedIds: [
+          ...req.results.map((r) => r.id),
+          ...req.pending.map((p) => p.id),
+        ],
+        byId: WORDLIST.byId,
+        currentTempo: sessionTempo,
+        accuracyRate: req.session.accuracyRate,
+        instantRate: req.session.instantRate,
+      });
+
+      if (signal.aborted) return;
+
+      // ★検証落ちも「取れなかった」と同じ扱い。カードは pending のまま残る
+      if (!validated.ok) {
+        console.warn("[feedback] 検証に失敗:", validated.reason);
+        setAi({ status: "failed" });
+        return;
+      }
+
+      const at = now();
+      const latest = getPersistedSnapshot();
+      const nextCards = applyAiResponseToCards(
+        latest.cards,
+        validated.response,
+        at,
+      );
+
+      writePersisted({
+        cards: nextCards,
+        sessions: markSessionAiReady(latest.sessions),
+      });
+
+      setAi({
+        status: "ready",
+        response: validated.response,
+        cards: pickArrivedCards(nextCards, validated.response.review_cards),
+      });
+    }
+    // answers / persisted は sessionSeq が変わる瞬間の値で確定しているので依存に入れない。
+    // 入れるとカード書き込みで persisted が変わるたびに再送してしまう。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, sessionSeq]);
+
+  if (isBootSnapshot(persisted)) return <BootSkeleton />;
+
+  if (phase === "home") {
+    return (
+      <HomeView
+        lastSession={persisted.sessions[0]}
+        pendingCount={countReviewCards(persisted.cards)}
+        tempo={persisted.settings.tempo}
+        onChangeTempo={(t) => writePersisted({ settings: { tempo: t } })}
+        onStart={startSession}
+      />
+    );
   }
 
-  if (phase === "home") return <HomeView onStart={startSession} />;
-  if (phase === "analyzing") {
-    return <AnalyzingStub answers={answers} onHome={quitToHome} />;
+  if (phase === "result") {
+    return (
+      <Shell
+        right="結果"
+        dock={
+          <div className="flex flex-col gap-[var(--s2)]">
+            <DockButton label="もう1セット" onClick={startSession} />
+          </div>
+        }
+        below={
+          <button
+            type="button"
+            onClick={quitToHome}
+            className="min-h-[44px] w-full text-[16px] text-text-mute"
+          >
+            ホームへ
+          </button>
+        }
+      >
+        <ResultView
+          answers={answers}
+          summary={summarize(answers)}
+          tempo={sessionTempo}
+          ai={ai}
+        />
+      </Shell>
+    );
   }
 
   return (
@@ -173,6 +350,21 @@ export function QuizRoot() {
   );
 }
 
+/** AI が説明を付けたカードだけを、応答の順序で取り出す */
+function pickArrivedCards(
+  cards: CardMap,
+  arrived: readonly { id: number }[],
+): CardMap[string][] {
+  return arrived
+    .map((a) => cards[String(a.id)])
+    .filter((c): c is CardMap[string] => c !== undefined);
+}
+
+/** 復習カードの枚数。卒業した語は cards から消えているので全件が対象 */
+function countReviewCards(cards: CardMap): number {
+  return Object.keys(cards).length;
+}
+
 /**
  * 画面の器（§13-7 a）。上＝読むもの／下＝触るもの。
  *
@@ -183,10 +375,13 @@ function Shell({
   right,
   children,
   dock,
+  below,
 }: {
   right?: ReactNode;
   children: ReactNode;
   dock: ReactNode;
+  /** ドックの主ボタンの下に置く控えめな操作（「ホームへ」など） */
+  below?: ReactNode;
 }) {
   return (
     <div className="flex min-h-[100dvh] flex-col">
@@ -194,30 +389,123 @@ function Shell({
       {/*
        * ★縦 flex にしてあるのは、中身の塊が `my-auto` で垂直中央に置けるようにするため。
        *   余った高さはこの main が持ち、塊の外側（上下）へ均等に出る。
-       *   内容が画面を超えたときは my-auto が 0 に潰れて普通にスクロールする。
        */}
       <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         {children}
       </main>
-      <Dock>{dock}</Dock>
+      <Dock below={below}>{dock}</Dock>
     </div>
   );
 }
 
 /**
- * ★段階3 の仮置き。前回SCORE・テンポ3択・/review は段階5。
- *
- * ここが localStorage 由来の値を描かないので、SSR の出力と
- * ハイドレーション後の出力が必ず一致する（§12-2 の boot が要らない理由）。
+ * boot（§12-2）。**localStorage 由来の値を一切描かない。**
+ * SSR の出力とこれが一致するので、ハイドレーション不一致が起きない。
  */
-function HomeView({ onStart }: { onStart: () => void }) {
+function BootSkeleton() {
+  return (
+    <div className="flex min-h-[100dvh] flex-col">
+      <AppBar />
+      <main className="min-h-0 flex-1" />
+    </div>
+  );
+}
+
+/** ホーム（§13-7 c） */
+function HomeView({
+  lastSession,
+  pendingCount,
+  tempo,
+  onChangeTempo,
+  onStart,
+}: {
+  lastSession: SessionRecord | undefined;
+  pendingCount: number;
+  tempo: TempoId;
+  onChangeTempo: (t: TempoId) => void;
+  onStart: () => void;
+}) {
   return (
     <Shell dock={<DockButton label="はじめる" onClick={onStart} />}>
-      <div className="app-shell py-[var(--s6)]">
+      {/*
+       * ★quiz と同じ塊の作り（§13-5 c・§13-7 a）。
+       *   上限 --content-max-y まで伸ばし、超えた余りは塊の外へ均等に出して中央に置く。
+       *   これが無いと PC の縦長ウィンドウで内容が上に固まり、下2/3が空白になる
+       *   （2026-08-17 実機で修正）。
+       */}
+      <div className="app-shell my-auto flex w-full max-h-[var(--content-max-y)] shrink-0 grow flex-col justify-between gap-[var(--s5)] py-[var(--s5)]">
         <p className="text-[26px] leading-[1.5]">なぜ間違えたかが、わかる。</p>
-        <p className="mt-[var(--s5)] text-[16px] text-text-mute">
-          前回の記録・テンポ設定・復習カードは段階5で入ります。
-        </p>
+
+        {/* ★初回は「前回」を出さない。0点の枠を見せない（§13-1 必要なことだけ出す） */}
+        {lastSession !== undefined && (
+          <div>
+            <div className="flex items-baseline justify-between">
+              <span className="text-[16px] text-text-sub">前回</span>
+              <span className="text-[17px]">
+                <span className="en">{lastSession.score}点</span>
+                <span className="ml-[var(--s2)] text-text-sub">
+                  {tempoLabel(lastSession.tempo)}
+                </span>
+              </span>
+            </div>
+            <div className="mt-[var(--s3)]">
+              {/*
+               * ★本数だけの復元であり、位置＝問番号ではない（§13-8）。
+               *   凡例は出す。何を見ているか分からない図にしない
+               */}
+              <ScoreStrip marks={restoreScoreMarks(lastSession)} showLegend />
+            </div>
+            <div className="mt-[var(--s4)] flex justify-between text-[16px]">
+              <span className="text-text-sub">
+                正解率{" "}
+                <span className="en text-text">
+                  {Math.round(lastSession.accuracyRate * 100)}%
+                </span>
+              </span>
+              <span className="text-text-sub">
+                即答率{" "}
+                <span className="en text-text">
+                  {Math.round(lastSession.instantRate * 100)}%
+                </span>
+              </span>
+            </div>
+          </div>
+        )}
+
+        <Link
+          href="/review"
+          className="flex min-h-[44px] items-center justify-between border-t border-line pt-[var(--s4)] text-[17px]"
+        >
+          <span>復習カード</span>
+          <span>
+            <span className="en">{pendingCount}枚</span>
+            <span className="ml-[var(--s2)] text-text-sub">→</span>
+          </span>
+        </Link>
+
+        <div className="border-t border-line pt-[var(--s4)]">
+          <div className="flex items-center gap-[var(--s2)]">
+            <span className="text-[16px] text-text-sub">テンポ</span>
+            {TEMPOS.map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => onChangeTempo(t)}
+                className={`min-h-[44px] flex-1 rounded-r2 border px-[var(--s2)] text-[16px] ${
+                  t === tempo
+                    ? "border-ok text-text"
+                    : "border-line text-text-sub"
+                }`}
+              >
+                {tempoLabel(t)}
+              </button>
+            ))}
+          </div>
+          {/* ★色だけで現在値を示さない。文字でも出す（§13-9） */}
+          <p className="mt-[var(--s2)] text-[16px] text-text-sub">
+            現在：{tempoLabel(tempo)}
+          </p>
+        </div>
       </div>
     </Shell>
   );
@@ -285,17 +573,12 @@ function QuizView({
        * 読む領域の中身は1つの塊にまとめ、**高さに上限を与えて垂直中央に置く**。
        * 横を --content-max（480px）で止めたのと同じことを縦にもする。
        *
-       * ★mt-auto で余りを1箇所に集める作りをやめた理由（2026-08-17 実機確認）：
-       *   画面が縦に長いほどその1箇所が青天井で伸び、PC の縦長ウィンドウで破綻する。
-       *   上下2箇所に振り分けても、余りの絶対量が大きければ同じことが起きる。
-       *   余りは「内部に配る」のではなく「塊の外に出す」のが正しい。
-       *
        *   grow      … 空きがあれば --content-max-y まで伸びる
        *   max-h     … そこで止める。これ以上は内部の間隔を広げない
        *   my-auto   … 上限に達したあとの余りを上下へ均等に出し、塊を中央に置く
        *   shrink-0  … 画面が足りないときは縮めずに main 側をスクロールさせる
        *   justify-between … 上限までの空きを目盛り／出題語／4択のあいだで分け合う
-       *   gap       … 分け合う前の最低間隔（32px）。空きが 0 でもここは詰まらない
+       *   gap       … 分け合う前の最低間隔（32px）
        */}
       <div className="app-shell my-auto flex w-full max-h-[var(--content-max-y)] shrink-0 grow flex-col justify-between gap-[var(--s6)] py-[var(--s5)]">
         {/* 進捗バーを別に作らない。得点と同じ部品を使う（§13-8） */}
@@ -314,7 +597,7 @@ function QuizView({
           </p>
         </div>
 
-        {/* 4択（§13-7 a・§12-7）。肢の間隔 8px。塊の下端＝ドックの直上 */}
+        {/* 4択（§13-7 a・§12-7）。肢の間隔 8px */}
         <div className="flex flex-col gap-[var(--s2)]">
           {question.choices.map((c) => (
             <ChoiceButton
@@ -329,35 +612,6 @@ function QuizView({
             />
           ))}
         </div>
-      </div>
-    </Shell>
-  );
-}
-
-/** ★段階4 で結果画面に置き換える。ここは通し終えたことの確認用 */
-function AnalyzingStub({
-  answers,
-  onHome,
-}: {
-  answers: readonly AnsweredQuestion[];
-  onHome: () => void;
-}) {
-  const s = summarize(answers);
-
-  return (
-    <Shell right="結果" dock={<DockButton label="ホームへ" onClick={onHome} />}>
-      <div className="app-shell py-[var(--s6)]">
-        <p className="en text-[56px] leading-[1.1]">{s.score}</p>
-        <p className="en mt-[var(--s1)] text-[16px] text-text-sub">
-          / {s.maxScore}
-        </p>
-        <div className="mt-[var(--s4)]">
-          {/* 本数は実際の出題数。QUESTIONS_PER_SESSION を直接書かない */}
-          <ScoreStrip marks={toScoreMarks(answers, answers.length)} showLegend />
-        </div>
-        <p className="mt-[var(--s5)] text-[16px] text-text-mute">
-          結果画面と AI 分析は段階4で入ります。ここまでが段階3の範囲です。
-        </p>
       </div>
     </Shell>
   );

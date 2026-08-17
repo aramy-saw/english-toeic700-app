@@ -4,6 +4,7 @@
  * 純関数として保つ：Date.now() も Math.random() も呼ばない。
  * LLM の出力はテストできないが「何を渡しているか」はテストできる、が設計の前提。
  */
+import { CAUSE_LABEL, causeLabel } from "../diagnosis";
 import type { Cause, FeedbackRequest, Level, WordId } from "../types";
 
 /** 出力する復習カードの上限（docs/spec.md §10-10） */
@@ -100,7 +101,9 @@ const formatTarget = (t: CardTarget, i: number): string =>
     `   意味: ${t.meaning}`,
     `   類義語: ${t.similar.join(", ")}`,
     `   使用場面: ${t.example_scene}`,
-    `   確定した原因: ${t.cause}`,
+    // ★内部値（pos_mismatch 等）を渡さない。渡すと生成文にそのまま漏れる
+    //   （2026-08-17 実機で pattern_summary に "(hesitant)" が出た）
+    `   確定した原因: ${causeLabel(t.cause)}`,
     `   区分: ${SOURCE_NOTE[t.source]}`,
   ].join("\n");
 
@@ -128,6 +131,9 @@ export function buildFeedbackPrompt(req: FeedbackRequest): string {
 2. 汎用的な励まし（「頑張りましょう」「その調子です」など）
 3. 学習法の一般論（「毎日続けることが大切」など）
 4. 語数・時間・スコアの創作。渡された数値以外は書かない
+5. 内部の識別子をそのまま書くこと。原因は上記の日本語表記だけで述べ、
+   \`pos_mismatch\` \`weak_memory\` \`hesitant\` のような英語の値を出力に含めない
+   （括弧書きの補足としても書かない）
 
 # 今回のセッション結果（アプリが集計済み。数え直さないこと）
 - テンポ設定: ${s.tempoLabel}（即答とみなす閾値: ${s.instantThresholdMs}ms）
@@ -136,9 +142,9 @@ export function buildFeedbackPrompt(req: FeedbackRequest): string {
 - 正解率: ${s.accuracyRate}
 - 即答率: ${s.instantRate}
 - 原因の内訳:
-  - pos_mismatch（品詞の取り違え）: ${c.pos_mismatch}件
-  - weak_memory（意味の記憶があいまい）: ${c.weak_memory}件
-  - hesitant（思い出すのに時間がかかった）: ${c.hesitant}件
+  - ${CAUSE_LABEL.pos_mismatch}: ${c.pos_mismatch}件
+  - ${CAUSE_LABEL.weak_memory}: ${c.weak_memory}件
+  - ${CAUSE_LABEL.hesitant}: ${c.hesitant}件
 
 # 復習カードを作る対象（${targets.length}件）
 以下の語だけを対象にしてください。**最大${MAX_REVIEW_CARDS}枚です。これを超えないでください。**
