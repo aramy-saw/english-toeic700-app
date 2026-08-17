@@ -39,15 +39,21 @@ export function buildSessionRecord(input: {
 }
 
 /**
- * 先頭（＝いま終わったセッション）の aiStatus を ready にする。
+ * 指定したセッション（finishedAt で特定）の aiStatus を ready にする。
  *
- * 先頭で安全な理由：「もう1セット」を押した時点で前セットの応答は abort して
- * 捨てる（§12-6 c）ので、**次のセッションが始まった後に前回の AI が返ることはない。**
+ * ★2026-08-18 に「先頭を ready」から変更した（§12-6 c）。
+ *   画面を離れても応答の受け取りを続けるようにしたため、
+ *   応答が返ってきた時点で**別のセッションが先頭にいる**ことがありうる。
+ *   先頭を書き換えると、AI が付いていないセッションを ready にしてしまう。
+ *
+ * finishedAt は Date.now() のミリ秒。同一クライアントで2セッションが
+ * 同じミリ秒に終わることは無いので、これで一意に決まる。
  */
 export function markSessionAiReady(
   sessions: readonly SessionRecord[],
+  finishedAt: number,
 ): SessionRecord[] {
-  if (sessions.length === 0) return [];
-  const [head, ...rest] = sessions;
-  return head === undefined ? [] : [{ ...head, aiStatus: "ready" }, ...rest];
+  return sessions.map((s) =>
+    s.finishedAt === finishedAt ? { ...s, aiStatus: "ready" } : s,
+  );
 }

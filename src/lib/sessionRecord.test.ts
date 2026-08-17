@@ -87,28 +87,48 @@ function record(over: Partial<SessionRecord> = {}): SessionRecord {
   };
 }
 
+/**
+ * ★2026-08-18 に「先頭を ready」から「finishedAt で特定して ready」に変えた。
+ *   画面を離れてもストリームを続けるようにしたため（spec.md §12-6 c）、
+ *   応答が返ってきた時点で**別のセッションが先頭にいる**ことがありうる。
+ *   先頭を書き換えると、関係のないセッションを ready にしてしまう。
+ */
 describe("markSessionAiReady", () => {
-  it("先頭のレコードだけを ready にする", () => {
+  it("finishedAt が一致するレコードだけを ready にする", () => {
     const sessions = [record({ finishedAt: 3 }), record({ finishedAt: 2 })];
-    const out = markSessionAiReady(sessions);
+    const out = markSessionAiReady(sessions, 2);
 
-    expect(out[0]?.aiStatus).toBe("ready");
-    expect(out[1]?.aiStatus).toBe("pending");
+    expect(out[0]?.aiStatus).toBe("pending");
+    expect(out[1]?.aiStatus).toBe("ready");
+  });
+
+  it("★別のセッションが先頭に来ていても、取り違えない", () => {
+    // 「もう1セット」を始めた後に前回の応答が返ってきた場合
+    const sessions = [record({ finishedAt: 100 }), record({ finishedAt: 50 })];
+    const out = markSessionAiReady(sessions, 50);
+
+    expect(out[0]?.aiStatus).toBe("pending");
+    expect(out[1]?.aiStatus).toBe("ready");
+  });
+
+  it("一致するものが無ければ何も変えない", () => {
+    const out = markSessionAiReady([record({ finishedAt: 3 })], 999);
+    expect(out[0]?.aiStatus).toBe("pending");
   });
 
   it("空配列でも落ちない", () => {
-    expect(markSessionAiReady([])).toEqual([]);
+    expect(markSessionAiReady([], 1)).toEqual([]);
   });
 
   it("入力を変更しない（純関数）", () => {
-    const sessions = [record()];
-    markSessionAiReady(sessions);
+    const sessions = [record({ finishedAt: 7 })];
+    markSessionAiReady(sessions, 7);
 
     expect(sessions[0]?.aiStatus).toBe("pending");
   });
 
   it("すでに ready のときは変わらない", () => {
-    const out = markSessionAiReady([record({ aiStatus: "ready" })]);
+    const out = markSessionAiReady([record({ finishedAt: 7, aiStatus: "ready" })], 7);
 
     expect(out[0]?.aiStatus).toBe("ready");
   });

@@ -127,6 +127,22 @@ export function QuizRoot() {
   const pendingRequest = useRef<FeedbackRequest | null>(null);
 
   /**
+   * いま確定したセッションの finishedAt。
+   * 応答が返ったときに「どのセッションを ready にするか」を特定するために持つ。
+   * 先頭とは限らない（§12-6 c）。
+   */
+  const pendingFinishedAt = useRef<number | null>(null);
+
+  /**
+   * いま画面に出ている結果が、どのセッションのものか。
+   *
+   * ★AI の受け取りは中断しないが、**表示は横取りさせない**（§12-6 c）。
+   *   「もう1セット」やホームへ戻ると -1 になり、走り続けている前回の応答は
+   *   localStorage には書くが setAi はしなくなる。
+   */
+  const displayedSeq = useRef(0);
+
+  /**
    * 出題を表示した時刻（monotonicNow）。
    * ★描画に使わない値なので state ではなく ref。
    */
@@ -142,6 +158,9 @@ export function QuizRoot() {
       },
       rng,
     );
+
+    // 前回の応答は受け取り続けるが、この画面を横取りさせない（§12-6 c）
+    displayedSeq.current = -1;
 
     setQuestions(built);
     setAnswers([]);
@@ -192,6 +211,7 @@ export function QuizRoot() {
    */
   function finishSession(finalAnswers: readonly AnsweredQuestion[]) {
     const at = now();
+    pendingFinishedAt.current = at;
 
     // ★書き込みより先に組み立てる（pendingRequest のコメント参照）
     pendingRequest.current = buildFeedbackRequest({
@@ -233,6 +253,7 @@ export function QuizRoot() {
 
   /** 中断。★何も保存しない（§12-2） */
   const quitToHome = useCallback(() => {
+    displayedSeq.current = -1;
     setQuestions([]);
     setAnswers([]);
     setCurrentIndex(0);
@@ -247,21 +268,38 @@ export function QuizRoot() {
    * ★sentSeq で二重送信を防ぐ。 StrictMode の2回実行対策であり、
    *   そのまま API コストの対策でもある。
    *
-   * ★クリーンアップで abort する。 「もう1セット」やホームへ戻る操作で
-   *   応答は破棄する（§12-6 c・2026-08-17 確定）。裏で生かさない。
+   * ★abort しない（2026-08-18 変更・§12-6 c）。
+   *   以前はクリーンアップで abort していた。結果画面を離れた時点で読み取りが止まり、
+   *   **そこまでに届いたカードだけが残って、残りは「まだ説明がありません」のまま**になる。
+   *   本番で8枚中3枚しか説明が入らなかったのはこれ（2026-08-18 実測）。
+   *   1枚目は約11秒、8枚目は約23秒。15秒あたりで画面を離れると3枚で止まる。
+   *
+   *   abort しても Anthropic 側の生成は止まらない。料金は同じで結果だけ捨てることになる。
+   *   カードは1枚ずつ localStorage に書いており、書き先は id で決まるので、
+   *   画面が無くなっても書き込みは正しく着地する。だから最後まで受け取る。
+   *
+   *   表示だけは横取りさせない（displayedSeq）。
    */
   useEffect(() => {
     if (phase !== "result" || sessionSeq === 0) return;
     if (sentSeq.current === sessionSeq) return;
     sentSeq.current = sessionSeq;
+    displayedSeq.current = sessionSeq;
 
-    const ac = new AbortController();
-    void requestFeedback(ac.signal);
-    return () => ac.abort();
+    // ★ref は後続セッションで上書きされるので、この時点の値を掴んでおく
+    const mySeq = sessionSeq;
+    const req = pendingRequest.current;
+    const finishedAt = pendingFinishedAt.current;
 
-    async function requestFeedback(signal: AbortSignal) {
-      const req = pendingRequest.current;
-      if (req === null) {
+    void requestFeedback();
+
+    /** この応答がまだ画面の持ち主か。false でも保存は続ける */
+    function isDisplayed() {
+      return displayedSeq.current === mySeq;
+    }
+
+    async function requestFeedback() {
+      if (req === null || finishedAt === null) {
         setAi({ ...AI_EMPTY, phase: "failed" });
         return;
       }
@@ -284,7 +322,6 @@ export function QuizRoot() {
        */
       const writtenIds = new Set<number>();
       const onProgress = (snapshot: string) => {
-        if (signal.aborted) return;
         const partial = extractPartial(snapshot);
 
         const fresh = partial.cards
@@ -308,6 +345,7 @@ export function QuizRoot() {
           arrived = pickArrivedCards(nextCards, fresh);
         }
 
+        if (!isDisplayed()) return; // 保存は済んでいる。表示だけしない
         setAi((prev) => ({
           phase: "streaming",
           patternSummary: partial.patternSummary ?? prev.patternSummary,
@@ -316,24 +354,23 @@ export function QuizRoot() {
         }));
       };
 
-      const res = await fetchFeedback(req, signal, onProgress);
-      if (signal.aborted) return;
+      // ★signal を渡さない。打ち切りは feedbackClient のタイムアウトだけ（§12-6 c）
+      const res = await fetchFeedback(req, undefined, onProgress);
 
       // ★失敗の理由を画面で出し分けない（§12-7）。ログにだけ残す。
       //   ここまでに届いた分は onProgress が保存済みなので消さない
       if (!res.ok) {
         console.warn("[feedback] 取得できず:", res.reason);
-        setAi((prev) => ({ ...prev, phase: "failed" }));
+        if (isDisplayed()) setAi((prev) => ({ ...prev, phase: "failed" }));
         return;
       }
 
       // 完了時に全体を検証する。こちらが正典（§10-5）
       const validated = validateAiResponse(res.raw, vctx);
-      if (signal.aborted) return;
 
       if (!validated.ok) {
         console.warn("[feedback] 検証に失敗:", validated.reason);
-        setAi((prev) => ({ ...prev, phase: "failed" }));
+        if (isDisplayed()) setAi((prev) => ({ ...prev, phase: "failed" }));
         return;
       }
 
@@ -347,9 +384,11 @@ export function QuizRoot() {
 
       writePersisted({
         cards: nextCards,
-        sessions: markSessionAiReady(latest.sessions),
+        // ★先頭ではなく finishedAt で特定する。先頭は別のセッションかもしれない
+        sessions: markSessionAiReady(latest.sessions, finishedAt),
       });
 
+      if (!isDisplayed()) return;
       setAi({
         phase: "done",
         patternSummary: validated.response.pattern_summary,
