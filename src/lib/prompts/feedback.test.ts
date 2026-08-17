@@ -80,16 +80,43 @@ const hesitant = (id: number) =>
   result(id, { is_correct: true, is_instant: false, cause: "hesitant" });
 
 describe("selectCardTargets", () => {
-  it("優先順位は pending → 今回の誤答 → 今回の非即答正解", () => {
-    // なぜ：spec.md §10-10。pending を先に消化しないとバックログが累積する
+  /**
+   * ★2026-08-18 に優先順位を反転した（spec.md §10-10）。
+   *   従来は pending が先頭だったため、バックログが5件あると
+   *   **今回作ったカードに今回の説明が1枚も入らなかった**（実測で確認）。
+   *   「今回のことは今回で説明する」を優先する。
+   */
+  it("優先順位は 今回の誤答 → 今回の非即答正解 → pending", () => {
     const targets = selectCardTargets(
       req({
         results: [hesitant(20), wrong(10)],
         pending: [pendingItem(1)],
       }),
     );
-    expect(targets.map((t) => t.id)).toEqual([1, 10, 20]);
-    expect(targets.map((t) => t.source)).toEqual(["pending", "wrong", "hesitant"]);
+    expect(targets.map((t) => t.id)).toEqual([10, 20, 1]);
+    expect(targets.map((t) => t.source)).toEqual(["wrong", "hesitant", "pending"]);
+  });
+
+  it("★今回の対象が5件あるとき、pending は1件も入らない", () => {
+    // これが変更の目的。今回作られたカードに必ず説明が入る
+    const targets = selectCardTargets(
+      req({
+        results: [10, 11, 12, 13, 14].map((id) => wrong(id)),
+        pending: [1, 2, 3, 4, 5].map((id) => pendingItem(id)),
+      }),
+    );
+    expect(targets.map((t) => t.id)).toEqual([10, 11, 12, 13, 14]);
+    expect(targets.every((t) => t.source === "wrong")).toBe(true);
+  });
+
+  it("今回の対象が5件未満なら、余った枠に pending が入る", () => {
+    const targets = selectCardTargets(
+      req({
+        results: [wrong(10), hesitant(20)],
+        pending: [1, 2, 3, 4, 5].map((id) => pendingItem(id)),
+      }),
+    );
+    expect(targets.map((t) => t.id)).toEqual([10, 20, 1, 2, 3]);
   });
 
   it("上限5件。6件以上の候補があっても5件に絞る", () => {
@@ -101,17 +128,17 @@ describe("selectCardTargets", () => {
     expect(MAX_REVIEW_CARDS).toBe(5);
   });
 
-  it("pending が5件あるとき、今回の誤答は入らない", () => {
-    // なぜ：優先順位の帰結。上限に達した時点で打ち切る（spec.md §10-10）
+  it("★古い pending は、今回の対象が多いと押し出される（既知の代償）", () => {
+    // spec.md §10-10。毎回5件以上まちがえ続けると古い pending は埋まらない。
+    // 実装では対処しない。手で消す導線（§12-8）がその受け皿
     const targets = selectCardTargets(
       req({
-        results: [wrong(10), wrong(11)],
-        pending: [1, 2, 3, 4, 5].map((id) => pendingItem(id)),
+        results: [10, 11, 12, 13, 14, 15].map((id) => wrong(id)),
+        pending: [1, 2, 3].map((id) => pendingItem(id)),
       }),
     );
     expect(targets).toHaveLength(5);
-    expect(targets.map((t) => t.id)).toEqual([1, 2, 3, 4, 5]);
-    expect(targets.every((t) => t.source === "pending")).toBe(true);
+    expect(targets.some((t) => t.source === "pending")).toBe(false);
   });
 
   it("即答で正解した語は対象に入らない（cause が null）", () => {

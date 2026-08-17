@@ -26,11 +26,18 @@ export type CardTarget = {
 
 /**
  * docs/spec.md §10-10 の優先順位で対象を選び、最大5件に絞る。
- *   1. pending  2. 今回の誤答  3. 今回の非即答正解
+ *   1. 今回の誤答  2. 今回の非即答正解  3. pending
+ *
+ * ★2026-08-18 に順序を反転した。
+ *   従来は pending が先頭だったため、バックログが5件あると
+ *   **今回作ったカードに今回の説明が1枚も入らなかった**（実測で確認）。
+ *   「今回まちがえたことは、今回のうちに説明する」を優先する。
+ *
+ * ★代償：毎回5件以上まちがえ続けると、古い pending はいつまでも埋まらない。
+ *   実装では対処しない。受け皿は `/review` の手動削除（§12-8）。
  *
  * ★req.pending は createdAt 昇順でソート済みである前提（§10-2 のコメント）。
  *   ここでは並べ替えず、配列順をそのまま信頼する。
- *   呼び出し側がソートせずに渡すと、優先順位が静かに壊れる。
  */
 export function selectCardTargets(req: FeedbackRequest): CardTarget[] {
   const out: CardTarget[] = [];
@@ -42,21 +49,6 @@ export function selectCardTargets(req: FeedbackRequest): CardTarget[] {
     taken.add(t.id);
     out.push(t);
   };
-
-  // 1. pending（配列順＝createdAt 昇順を信頼する）
-  for (const p of req.pending) {
-    push({
-      id: p.id,
-      word: p.word,
-      pos: p.pos,
-      level: p.level,
-      meaning: p.meaning,
-      similar: p.similar,
-      example_scene: p.example_scene,
-      cause: p.cause,
-      source: "pending",
-    });
-  }
 
   // 復習対象は cause が確定している語のみ（即答正解は cause === null で対象外）
   const fromResults = (source: "wrong" | "hesitant") => {
@@ -79,10 +71,25 @@ export function selectCardTargets(req: FeedbackRequest): CardTarget[] {
     }
   };
 
-  // 2. 今回の誤答
+  // 1. 今回の誤答
   fromResults("wrong");
-  // 3. 今回の非即答正解
+  // 2. 今回の非即答正解
   fromResults("hesitant");
+
+  // 3. pending（配列順＝createdAt 昇順を信頼する）。今回の対象で埋まっていれば入らない
+  for (const p of req.pending) {
+    push({
+      id: p.id,
+      word: p.word,
+      pos: p.pos,
+      level: p.level,
+      meaning: p.meaning,
+      similar: p.similar,
+      example_scene: p.example_scene,
+      cause: p.cause,
+      source: "pending",
+    });
+  }
 
   return out;
 }

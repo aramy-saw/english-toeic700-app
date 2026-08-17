@@ -53,9 +53,14 @@ export function ReviewCardView({
       </header>
 
       {content === null ? (
-        // ★失敗の報告ではなく予定の告知（§10-6）。謝らない
+        /*
+         * ★2026-08-18 に「説明は次回のセッションで追加されます」から変更（§10-6）。
+         *   今回の語を優先するようになったため（§10-10）、
+         *   古い pending が次回で埋まる保証が弱くなった。予告しない事実の記述にする。
+         *   謝らないこと自体は変えない。
+         */
         <p className="mt-[var(--s3)] text-[16px] text-text-mute">
-          説明は次回のセッションで追加されます
+          まだ説明がありません
         </p>
       ) : (
         <div className="mt-[var(--s3)] flex flex-col gap-[var(--s3)]">
