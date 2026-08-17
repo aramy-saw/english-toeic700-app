@@ -35,18 +35,29 @@ export function Readout({
 }) {
   return (
     <div>
-      {/* SCORE。56px 等幅（§13-6 a） */}
-      <p className="en text-[56px] leading-[1.05]">{summary.score}</p>
+      {/*
+       * SCORE。56px 等幅（§13-6 a）。
+       * ★到着の動き（§13-10 a の4）。カウントアップはしない。
+       *   値は最初から確定して出し、現れ方だけが動く。
+       */}
+      <p className="en score-arrive text-[56px] leading-[1.05]">
+        {summary.score}
+      </p>
       <p className="mt-[var(--s1)] text-[16px] text-text-sub">
         <span className="en">/ {summary.maxScore}</span>
         <span className="ml-[var(--s3)]">{tempoLabel(tempo)}</span>
       </p>
 
-      {/* SCORE の直下に目盛り。この合計が SCORE そのもの（§13-8） */}
+      {/*
+       * SCORE の直下に目盛り。この合計が SCORE そのもの（§13-8）。
+       * ★rise は result だけ true（§13-10 a の3）。値が確定した瞬間に立ち上がる。
+       *   Readout は result 専用の部品なので、ここは常に true でよい。
+       */}
       <div className="mt-[var(--s4)]">
         <ScoreStrip
           marks={toScoreMarks(answers, summary.questionCount)}
           showLegend
+          rise
         />
       </div>
 

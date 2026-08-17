@@ -106,9 +106,24 @@ type Props = {
    * 凡例2〜3行を足すとドックが押し出され、§12-7「主要な操作と4択は下寄せ」が壊れる。
    */
   showLegend: boolean;
+  /**
+   * 目盛りを立ち上げるか（§13-10 a の3）。**既定値を置かず必ず明示させる。**
+   *
+   * ★`result` だけ true。 値が確定した瞬間だけ動かす。
+   *   `quiz` は false（あれは進捗であって計測結果ではない）。
+   *   `home` も false（あれは過去の記録であって、いま測ったものではない）。
+   *
+   * ★動くのは到着時1回だけ。 CSS アニメーションなので、
+   *   同じ要素が残っている限り再描画では動き直さない。
+   *   28秒後に AI カードが届いてもここは動かない。
+   */
+  rise: boolean;
 };
 
-export function ScoreStrip({ marks, showLegend }: Props) {
+/** 左から 0.03 秒ずつずらす（§13-10 a の3） */
+const RISE_STEP_MS = 30;
+
+export function ScoreStrip({ marks, showLegend, rise }: Props) {
   return (
     <div>
       {/* 10個の空要素が読み上げられるのを防ぐ。中身は1つの図として扱う */}
@@ -121,7 +136,8 @@ export function ScoreStrip({ marks, showLegend }: Props) {
           <span
             // 目盛りは位置＝問番号であり並び替えないので index をキーにしてよい
             key={i}
-            className={`min-w-0 flex-1 rounded-r1 ${MARK_CLASS[mark]}`}
+            className={`min-w-0 flex-1 rounded-r1 ${MARK_CLASS[mark]} ${rise ? "mark-rise" : ""}`}
+            style={rise ? { animationDelay: `${i * RISE_STEP_MS}ms` } : undefined}
           />
         ))}
       </div>

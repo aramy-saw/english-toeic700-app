@@ -107,6 +107,20 @@ const formatTarget = (t: CardTarget, i: number): string =>
     `   区分: ${SOURCE_NOTE[t.source]}`,
   ].join("\n");
 
+/**
+ * ミリ秒 → 秒の表示用文字列（docs/data-findings.md §9）。
+ *
+ * ★ms はアプリの内部表現であって、鈴木さんが読む単位ではない。
+ *   2026-08-17 のモデル比較で、Sonnet 5 の explanation に
+ *   「閾値の5000ms」がそのまま出た。cause の内部値を排除したのと同じ趣旨。
+ *
+ * 5000 → "5秒" / 4500 → "4.5秒"。小数1桁までで、末尾の .0 は作らない。
+ */
+function secondsLabel(ms: number): string {
+  const sec = Math.round(ms / 100) / 10;
+  return `${sec}秒`;
+}
+
 /** プロンプト本文を組み立てる。★ここが正典 */
 export function buildFeedbackPrompt(req: FeedbackRequest): string {
   const s = req.session;
@@ -134,9 +148,11 @@ export function buildFeedbackPrompt(req: FeedbackRequest): string {
 5. 内部の識別子をそのまま書くこと。原因は上記の日本語表記だけで述べ、
    \`pos_mismatch\` \`weak_memory\` \`hesitant\` のような英語の値を出力に含めない
    （括弧書きの補足としても書かない）
+6. 時間をミリ秒で書くこと。時間に触れるときは「5秒」のように秒で書く。
+   \`ms\` \`ミリ秒\` という単位を出力に含めない
 
 # 今回のセッション結果（アプリが集計済み。数え直さないこと）
-- テンポ設定: ${s.tempoLabel}（即答とみなす閾値: ${s.instantThresholdMs}ms）
+- テンポ設定: ${s.tempoLabel}（即答とみなす閾値: ${secondsLabel(s.instantThresholdMs)}）
 - 出題数: ${s.questionCount}問
 - スコア: ${s.score} / ${s.maxScore}
 - 正解率: ${s.accuracyRate}

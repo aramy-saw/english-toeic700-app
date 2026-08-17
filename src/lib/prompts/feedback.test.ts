@@ -172,6 +172,44 @@ describe("buildFeedbackPrompt", () => {
     expect(p).toContain("出力に含めない");
   });
 
+  /**
+   * ★2026-08-17 のモデル比較で発覚（docs/data-findings.md §9）。
+   *   Sonnet 5 の explanation に「閾値の5000ms」と内部の単位が出た。
+   *   ms はアプリの内部表現であって、鈴木さんが読む単位ではない。
+   *   cause の内部値を排除したのと同じ趣旨。
+   */
+  it("即答の閾値を秒で渡す（ミリ秒の内部表現を渡さない）", () => {
+    const p = buildFeedbackPrompt(sample()); // instantThresholdMs: 5000
+
+    expect(p).toContain("5秒");
+    expect(p).not.toContain("5000ms");
+    expect(p).not.toContain("5000 ms");
+    expect(p).not.toContain("5000ミリ秒");
+  });
+
+  it("3つのテンポの閾値をすべて秒に変換する", () => {
+    const at = (ms: number) =>
+      buildFeedbackPrompt(req({ session: { ...req().session, instantThresholdMs: ms } }));
+
+    expect(at(8000)).toContain("8秒");
+    expect(at(5000)).toContain("5秒");
+    expect(at(3000)).toContain("3秒");
+  });
+
+  it("1000で割り切れない値は小数1桁までにする（末尾の .0 を作らない）", () => {
+    const at = (ms: number) =>
+      buildFeedbackPrompt(req({ session: { ...req().session, instantThresholdMs: ms } }));
+
+    expect(at(4500)).toContain("4.5秒");
+    expect(at(2000)).toContain("2秒");
+    expect(at(2000)).not.toContain("2.0秒");
+  });
+
+  it("秒で答えるよう出力側にも指示する", () => {
+    const p = buildFeedbackPrompt(sample());
+    expect(p).toContain("ミリ秒");
+  });
+
   it("対象語の similar が含まれる", () => {
     // なぜ：usage_note（使い分け説明）の材料。課題①への答え（spec.md §10-9）
     const p = buildFeedbackPrompt(sample());

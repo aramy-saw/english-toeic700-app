@@ -453,7 +453,12 @@ function HomeView({
                * ★本数だけの復元であり、位置＝問番号ではない（§13-8）。
                *   凡例は出す。何を見ているか分からない図にしない
                */}
-              <ScoreStrip marks={restoreScoreMarks(lastSession)} showLegend />
+              {/* ★rise=false。過去の記録であって、いま測ったものではない（§13-10 a） */}
+              <ScoreStrip
+                marks={restoreScoreMarks(lastSession)}
+                showLegend
+                rise={false}
+              />
             </div>
             <div className="mt-[var(--s4)] flex justify-between text-[16px]">
               <span className="text-text-sub">
@@ -581,10 +586,15 @@ function QuizView({
        *   gap       … 分け合う前の最低間隔（32px）
        */}
       <div className="app-shell my-auto flex w-full max-h-[var(--content-max-y)] shrink-0 grow flex-col justify-between gap-[var(--s6)] py-[var(--s5)]">
-        {/* 進捗バーを別に作らない。得点と同じ部品を使う（§13-8） */}
+        {/*
+         * 進捗バーを別に作らない。得点と同じ部品を使う（§13-8）。
+         * ★rise=false。 これは進捗であって計測結果ではない（§13-10 a）。
+         *   1問答えるたびに立ち上がると、答えるより目盛りを見る時間が増える。
+         */}
         <ScoreStrip
           marks={toScoreMarks(answers, questions.length)}
           showLegend={false}
+          rise={false}
         />
 
         {/* 出題語（§13-7 a「上は読むもの」） */}

@@ -35,8 +35,9 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
   },
   twitter: {
-    // 画像を持たないので large ではなく summary（大きい枠に画像が無いと空白が目立つ）
-    card: "summary",
+    // ★og画像は src/app/opengraph-image.tsx が生成する。
+    //   画像のURL・寸法・type のメタタグは Next.js が自動で足すので、ここには書かない
+    card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
   },

@@ -120,8 +120,9 @@ body {
  * opacity 0→1 ＋ translateY 6px→0 ／ 240ms ／ ease-out。
  * 遅延は AiSlot が animation-delay で 0.1 秒間隔に付ける。
  *
- * ★動かすものは2つだけ（§13-10 a）。これはそのうちの1つ。
- *   もう1つは選択肢押下の背景色 120ms。それ以外に遷移を足さない。
+ * ★動かすものは4つだけ（§13-10 a）。これはそのうちの1つ。
+ *   残りは選択肢押下の背景色 120ms、result の目盛りの立ち上がり、
+ *   result の SCORE の到着。それ以外に遷移を足さない。
  *
  * ★backwards を指定しないと、delay 中に不透明のまま見えてから
  *   一瞬消える。1枚ずつ現れる演出が壊れるので必須。
@@ -142,11 +143,62 @@ body {
 }
 
 /**
- * ★動きを減らす設定のときは、遅延も移動も不透明度の遷移も無くす（§13-10）。
- *   「薄くしてから出す」も動きなので、カードは即座に不透明で表示する。
+ * 目盛りの立ち上がり（§13-10 a の3）。**result でのみ使う。**
+ * 高さ 0 → 規定値 ／ 240ms ／ ease-out。遅延は ScoreStrip が 0.03秒間隔で付ける。
+ *
+ * ★height ではなく transform: scaleY で伸ばす。
+ *   目盛りの高さは 20 / 10 / 3px と3種類あり、keyframe 側から規定値を知れない。
+ *   scaleY(0→1) なら高さが何であっても「下から立ち上がる」が成立する。
+ *   transform なのでレイアウトも再計算されない。
+ *
+ * ★transform-origin: bottom が要。 既定の center だと上下に伸びて、
+ *   §13-8 の「全マークを下端揃えにする」が一瞬崩れる。
+ */
+.mark-rise {
+  animation: mark-rise 240ms ease-out backwards;
+  transform-origin: bottom;
+}
+
+@keyframes mark-rise {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/**
+ * SCORE の数字の到着（§13-10 a の4）。**result でのみ使う。**
+ * opacity 0→1 ＋ translateY 8px→0 ／ 240ms ／ ease-out。
+ *
+ * ★カウントアップはしない（§12-6 e の禁止を維持）。
+ *   数字が回ると「読む」より先に「眺める」ことになる。値は最初から確定して出す。
+ */
+.score-arrive {
+  animation: score-arrive 240ms ease-out backwards;
+}
+
+@keyframes score-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/**
+ * ★動きを減らす設定のときは、4つすべてを無効化する（§13-10 a）。
+ *   遅延も移動も不透明度の遷移も無くし、即座に規定値で表示する。
+ *   「薄くしてから出す」「0から伸ばす」も動きなので、まとめて止める。
  */
 @media (prefers-reduced-motion: reduce) {
-  .card-arrive {
+  .card-arrive,
+  .mark-rise,
+  .score-arrive {
     animation: none;
   }
 }
