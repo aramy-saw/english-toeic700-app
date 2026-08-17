@@ -191,7 +191,14 @@ function Shell({
   return (
     <div className="flex min-h-[100dvh] flex-col">
       <AppBar right={right} />
-      <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
+      {/*
+       * ★縦 flex にしてあるのは、中身の塊が `my-auto` で垂直中央に置けるようにするため。
+       *   余った高さはこの main が持ち、塊の外側（上下）へ均等に出る。
+       *   内容が画面を超えたときは my-auto が 0 に潰れて普通にスクロールする。
+       */}
+      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        {children}
+      </main>
       <Dock>{dock}</Dock>
     </div>
   );
@@ -274,38 +281,54 @@ function QuizView({
         )
       }
     >
-      <div className="app-shell pt-[var(--s3)]">
+      {/*
+       * 読む領域の中身は1つの塊にまとめ、**高さに上限を与えて垂直中央に置く**。
+       * 横を --content-max（480px）で止めたのと同じことを縦にもする。
+       *
+       * ★mt-auto で余りを1箇所に集める作りをやめた理由（2026-08-17 実機確認）：
+       *   画面が縦に長いほどその1箇所が青天井で伸び、PC の縦長ウィンドウで破綻する。
+       *   上下2箇所に振り分けても、余りの絶対量が大きければ同じことが起きる。
+       *   余りは「内部に配る」のではなく「塊の外に出す」のが正しい。
+       *
+       *   grow      … 空きがあれば --content-max-y まで伸びる
+       *   max-h     … そこで止める。これ以上は内部の間隔を広げない
+       *   my-auto   … 上限に達したあとの余りを上下へ均等に出し、塊を中央に置く
+       *   shrink-0  … 画面が足りないときは縮めずに main 側をスクロールさせる
+       *   justify-between … 上限までの空きを目盛り／出題語／4択のあいだで分け合う
+       *   gap       … 分け合う前の最低間隔（32px）。空きが 0 でもここは詰まらない
+       */}
+      <div className="app-shell my-auto flex w-full max-h-[var(--content-max-y)] shrink-0 grow flex-col justify-between gap-[var(--s6)] py-[var(--s5)]">
         {/* 進捗バーを別に作らない。得点と同じ部品を使う（§13-8） */}
         <ScoreStrip
           marks={toScoreMarks(answers, questions.length)}
           showLegend={false}
         />
-      </div>
 
-      {/* 出題語。上下に余白を取り、4択はドック側（下）に寄せる（§12-7） */}
-      <div className="app-shell py-[var(--s7)]">
-        <p className="en text-[clamp(26px,8vw,34px)] leading-[1.3]">
-          {question.entry.word}
-        </p>
-        <p className="mt-[var(--s2)] text-[16px] text-text-sub">
-          {question.entry.posRaw}
-        </p>
-      </div>
+        {/* 出題語（§13-7 a「上は読むもの」） */}
+        <div>
+          <p className="en text-[clamp(26px,8vw,34px)] leading-[1.3]">
+            {question.entry.word}
+          </p>
+          <p className="mt-[var(--s2)] text-[16px] text-text-sub">
+            {question.entry.posRaw}
+          </p>
+        </div>
 
-      {/* 4択はドックの直上（§13-7 a）。間隔 8px */}
-      <div className="app-shell flex flex-col gap-[var(--s2)] pb-[var(--s4)]">
-        {question.choices.map((c) => (
-          <ChoiceButton
-            key={c.choiceId}
-            text={c.text}
-            state={choiceStateOf({
-              isCorrectChoice: c.isCorrect,
-              isSelected: c.choiceId === selectedChoiceId,
-              revealed,
-            })}
-            onClick={revealed ? undefined : () => onAnswer(c.choiceId)}
-          />
-        ))}
+        {/* 4択（§13-7 a・§12-7）。肢の間隔 8px。塊の下端＝ドックの直上 */}
+        <div className="flex flex-col gap-[var(--s2)]">
+          {question.choices.map((c) => (
+            <ChoiceButton
+              key={c.choiceId}
+              text={c.text}
+              state={choiceStateOf({
+                isCorrectChoice: c.isCorrect,
+                isSelected: c.choiceId === selectedChoiceId,
+                revealed,
+              })}
+              onClick={revealed ? undefined : () => onAnswer(c.choiceId)}
+            />
+          ))}
+        </div>
       </div>
     </Shell>
   );

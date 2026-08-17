@@ -8,7 +8,15 @@
  *   iOS Safari のツールバー伸縮のたびに 100vh とズレて4択が隠れるため、
  *   その事故が起きない組み方にしてある。dvh は伸縮に追従する。
  *
- * ★padding に env(safe-area-inset-bottom) を足す。ホームバーに主ボタンが被らない。
+ * ★下余白は --s6（32px）＋ env(safe-area-inset-bottom)。
+ *   上下で非対称（上16px・下32px）なのは意図的。下辺には画面外の物理的な障害物がある。
+ *   env が効くのは layout.tsx が `viewportFit: "cover"` を宣言しているからで、
+ *   これが無いと env は 0 を返す。**片方だけ消すと静かに壊れる。**
+ *
+ * ★中身の高さを 52px に固定してある。
+ *   `次へ`（枠線付きボタン）と `わからない／やめる`（素のテキスト）で
+ *   床の見え方が変わらないようにするため。同じ余白でも、枠が無いと
+ *   端に張り付いて見える（2026-08-17 実機確認）。
  */
 import type { ReactNode } from "react";
 
@@ -17,10 +25,15 @@ export function Dock({ children }: { children: ReactNode }) {
     <div
       className="border-t border-line bg-bg"
       style={{
-        paddingBottom: "calc(var(--s4) + env(safe-area-inset-bottom))",
+        paddingBottom: "calc(var(--s6) + env(safe-area-inset-bottom))",
       }}
     >
-      <div className="app-shell pt-[var(--s4)]">{children}</div>
+      <div className="app-shell pt-[var(--s4)]">
+        {/* 高さ 52px を器側で固定する。中身が枠付きボタンでも素のテキストでも床が動かない */}
+        <div className="flex h-[52px] items-center">
+          <div className="w-full">{children}</div>
+        </div>
+      </div>
     </div>
   );
 }
