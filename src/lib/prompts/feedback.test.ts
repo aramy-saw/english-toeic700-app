@@ -210,6 +210,37 @@ describe("buildFeedbackPrompt", () => {
     expect(p).toContain("ミリ秒");
   });
 
+  /**
+   * ★2026-08-17 実機で2件の矛盾が出た。どちらも「AIに言わせない」で構造的に潰す。
+   *
+   *   1. pattern_summary が件数を数え直し、CauseTable の 4/2/2 に対して
+   *      「4件・4件・2件」と書いた。→ 数値に触れさせない
+   *   2. カードのタグが「品詞の取り違え」なのに explanation が
+   *      「意味の記憶があいまいだったため」と別の原因を書いた。→ 原因名を書かせない
+   *
+   * どちらも、アプリが画面に出している情報をAIに繰り返させたのが原因。
+   * 繰り返させるから食い違う。§13-1「必要なことだけ出す」にも合う。
+   */
+  it("pattern_summary に数値を書かせない", () => {
+    const p = buildFeedbackPrompt(sample());
+
+    expect(p).toMatch(/pattern_summary[\s\S]*?数値には一切触れない/);
+  });
+
+  it("explanation に原因名を書かせない", () => {
+    const p = buildFeedbackPrompt(sample());
+
+    expect(p).toMatch(/explanation[\s\S]*?原因の名前[\s\S]*?書かない/);
+  });
+
+  it("原因はデータとしては渡し続ける（説明の材料に要る）", () => {
+    // ★「書かせない」であって「渡さない」ではない。
+    //   何につまずいたかを説明させるには、確定した原因が要る
+    const p = buildFeedbackPrompt(sample());
+
+    expect(p).toContain("確定した原因: 品詞の取り違え");
+  });
+
   it("対象語の similar が含まれる", () => {
     // なぜ：usage_note（使い分け説明）の材料。課題①への答え（spec.md §10-9）
     const p = buildFeedbackPrompt(sample());
