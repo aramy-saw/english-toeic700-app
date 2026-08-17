@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { now, todayJst } from "./clock";
+import { monotonicNow, now, todayJst } from "./clock";
 
 /**
  * ★todayJst は UTC ではなく JST で日付を返す（docs/spec.md §12-4）。
@@ -51,5 +51,29 @@ describe("now", () => {
     expect(Number.isFinite(value)).toBe(true);
     expect(value).toBeGreaterThanOrEqual(before);
     expect(value).toBeLessThanOrEqual(after);
+  });
+});
+
+/**
+ * ★monotonicNow は壁時計ではない（docs/spec.md §12-2 / clock.ts のコメント）。
+ *   回答時間の計測に Date.now() の差分を使うと、端末の時刻変更や NTP 補正で
+ *   値が飛ぶ・巻き戻る。responseMs は得点システムの土台なので単調増加が要る。
+ */
+describe("monotonicNow", () => {
+  it("有限の数値を返す", () => {
+    expect(Number.isFinite(monotonicNow())).toBe(true);
+  });
+
+  it("2回呼ぶと後の値が前の値以上（単調非減少）", () => {
+    const first = monotonicNow();
+    const second = monotonicNow();
+
+    expect(second).toBeGreaterThanOrEqual(first);
+  });
+
+  it("壁時計を返していない（Date.now() より桁がはるかに小さい）", () => {
+    // Date.now() は 2026 年時点で約 1.7e12。monotonicNow はプロセス生存時間なので
+    // 桁が違う。ここが逆転していたら Date.now() を返す実装になっている。
+    expect(monotonicNow()).toBeLessThan(Date.now());
   });
 });

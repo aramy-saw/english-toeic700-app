@@ -23,6 +23,19 @@ export const DEFAULT_TEMPO: TempoId = "normal";
 export const NO_ANSWER_TIMEOUT_MS = 60000;
 
 /**
+ * 経過時間が長すぎて「回答」とみなせないか（docs/spec.md §7-1 の注記）。
+ *
+ * ★タイマーで自動的に次の問題へ進めるための値ではない。
+ *   回答した瞬間の経過時間に適用する上限である。通勤中に画面を伏せた人の問題を
+ *   勝手に閉じないため、UI 側にカウントダウンも自動遷移も置かない（§12-2）。
+ *
+ * 60000ms ちょうどはまだ回答として扱う（isInstant と同じく「超えたら」で判定する）。
+ */
+export function isNoAnswer(elapsedMs: number): boolean {
+  return elapsedMs > NO_ANSWER_TIMEOUT_MS;
+}
+
+/**
  * 表示名。「初級・中級・上級」とは呼ばない
  * （配布データの level 1/2/3 と混同するため。docs/spec.md §8）
  */

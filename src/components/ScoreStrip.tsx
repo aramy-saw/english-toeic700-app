@@ -15,8 +15,14 @@
  *   どちらもこの部品ではない。quiz で本が立つときも遷移を付けない。
  */
 
-/** 1問の結果。誤答と無回答は同じ見え方（§13-8 の表）なので "wrong" に畳む */
-export type ScoreMark = "instant" | "correct" | "wrong" | "unanswered";
+import type { ScoreMark } from "@/lib/types";
+
+/**
+ * ★型は src/lib/types.ts にある。導出は src/lib/marks.ts の toScoreMarks()。
+ *   ここから再エクスポートしているのは、この部品だけを import する側が
+ *   型のためだけに lib を触らなくて済むようにするため。
+ */
+export type { ScoreMark };
 
 /**
  * 目盛りの寸法（§13-8 の表）。

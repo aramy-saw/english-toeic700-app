@@ -81,6 +81,15 @@ export type AnsweredQuestion = {
   cause: Cause | null;
 };
 
+/**
+ * 目盛り1本の見え方（docs/spec.md §13-8）。
+ * 誤答と無回答は同じ見え方なので "wrong" に畳む。
+ *
+ * 描画は components/ScoreStrip.tsx、導出は lib/marks.ts。
+ * 型がここにあるのは、lib が components に依存しないようにするため。
+ */
+export type ScoreMark = "instant" | "correct" | "wrong" | "unanswered";
+
 export type SessionSummary = {
   questionCount: number;
   score: number;
