@@ -4,22 +4,23 @@
  * src/platform/ の責務：fetch と AbortController を持つ。
  * 検証（V1〜V6）は src/lib/aiResponse.ts の純関数が行う。ここでは持たない。
  *
- * ★90秒で打ち切る（2026-08-18 変更。docs/spec.md §12-6 f）。
- *   Route Handler 側の maxDuration は120秒なので、クライアントが必ず先に諦める。
+ * ★60秒で打ち切る（2026-08-18 変更。docs/spec.md §12-6 f）。
+ *   Route Handler 側の maxDuration は90秒なので、クライアントが必ず先に諦める。
  *
  *   ★打ち切りの意味が変わった。 ストリーミング化（§12-6 d）により、
  *   ここまでに届いたカードは**すでに localStorage に書かれている**。
  *   打ち切りは「全部を失う」ではなく「そこで打ち切って、届いた分で成立させる」。
  *
- *   90000 の根拠：上限撤廃（§10-10）で1回の対象が15件になりうる。
- *   ローカル実測で15件・60.4秒（thinking 既定）。余裕を持たせて90秒とした。
+ *   60000 の根拠：thinking を切った後のローカル実測は15件で39.1秒。
+ *   本番はローカルの1.3〜1.6倍で推移してきたので、上振れても60秒に収まる見込み。
+ *   **超えても全部を失わない**ので、余裕を過大に取る意味がない。
  *
  *   ★fetch 失敗（オフライン・圏外）も AbortError と同じく pending 方式に落とす。
  *     文言も区別しない（§12-7）。鈴木さんにとっては同じことなので。
  */
 import type { FeedbackRequest } from "@/lib/types";
 
-export const FEEDBACK_TIMEOUT_MS = 90000;
+export const FEEDBACK_TIMEOUT_MS = 60000;
 
 /**
  * ok:false は「AIの分析が取れなかった」という意味であり、エラーではない。

@@ -8,22 +8,15 @@
  * つまりキーが無くてもアプリは動き、カードは pending のまま作られる（§10-6）。
  */
 import Anthropic from "@anthropic-ai/sdk";
-import { buildFeedbackPrompt } from "@/lib/prompts/feedback";
-import { RESPONSE_SCHEMA } from "@/lib/prompts/schema";
+import { buildMessageParams } from "@/lib/aiRequestParams";
 import type { FeedbackRequest } from "@/lib/types";
 
 export const runtime = "nodejs";
-// ★2026-08-18 に 60 → 120。上限撤廃（§10-10）で1回の生成が長くなったため。
-//   クライアント側の打ち切りは90秒なので、サーバーが先に落ちることはない
-export const maxDuration = 120;
+// ★2026-08-18 に 60 → 90。上限撤廃（§10-10）で1回の生成が長くなったため。
+//   クライアント側の打ち切りは60秒なので、サーバーが先に落ちることはない
+export const maxDuration = 90;
 
 const DEFAULT_MODEL = "claude-sonnet-5";
-
-/**
- * adaptive thinking がデフォルトONで、max_tokens は thinking と本文の合算上限。
- * 途中で切れると検証層がエラー扱いにするので余裕を持たせる（§10-1）。
- */
-const MAX_TOKENS = 8000;
 
 /** クライアントは ok:false を受けたら pending 方式に落とす */
 type RouteResult =
@@ -74,15 +67,8 @@ export async function POST(request: Request): Promise<Response> {
    *   クライアントはそこまでに確定した分を保持する。
    */
   try {
-    const stream = client.messages.stream({
-      model,
-      max_tokens: MAX_TOKENS,
-      // temperature / top_p / top_k は渡さない（非デフォルト値は400エラー。§10-1）
-      output_config: {
-        format: { type: "json_schema", schema: RESPONSE_SCHEMA },
-      },
-      messages: [{ role: "user", content: buildFeedbackPrompt(req) }],
-    });
+    // ★パラメータの組み立ては lib 側（テスト可能にするため・§12-6 d）
+    const stream = client.messages.stream(buildMessageParams(req, model));
 
     const body = new ReadableStream<Uint8Array>({
       async start(controller) {
